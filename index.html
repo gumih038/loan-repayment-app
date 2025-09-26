@@ -1,1665 +1,1142 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>返済計画管理アプリ</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2563eb">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        :root {
-            --primary: #2563eb;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --warning: #ca8a04;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --gray-900: #111827;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-900);
-            line-height: 1.5;
-        }
-        
-        .container {
-            max-width: 414px;
-            margin: 0 auto;
-            background: white;
-            min-height: 100vh;
-        }
-        
-        .header {
-            background: var(--primary);
-            color: white;
-            padding: 24px 20px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .total-debt {
-            font-size: 2rem;
-            font-weight: 700;
-            margin: 8px 0 4px;
-        }
-        
-        .debt-subtitle {
-            font-size: 0.875rem;
-            opacity: 0.9;
-        }
-        
-        .main-content {
-            padding: 20px;
-            padding-bottom: 120px;
-        }
-        
-        .setup-section {
-            background: var(--warning);
-            color: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .setup-section h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-        
-        .setup-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        
-        .setup-input {
-            padding: 12px;
-            border: none;
-            font-size: 0.875rem;
-            background: rgba(255,255,255,0.9);
-        }
-        
-        .setup-btn {
-            background: white;
-            color: var(--warning);
-            border: none;
-            padding: 12px 24px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .quick-stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1px;
-            margin-bottom: 20px;
-            background: var(--gray-200);
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 16px 8px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 0.875rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 4px;
-        }
-        
-        .stat-label {
-            font-size: 0.65rem;
-            color: var(--gray-600);
-            font-weight: 500;
-        }
-        
-        .loan-card {
-            background: white;
-            border: 1px solid var(--gray-200);
-            margin-bottom: 20px;
-            padding: 20px;
-        }
-        
-        .loan-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--gray-200);
-        }
-        
-        .loan-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1.125rem;
-            font-weight: 600;
-        }
-        
-        .loan-balance {
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-        
-        .acom .loan-balance { 
-            color: var(--danger);
-        }
-        
-        .smbc .loan-balance { 
-            color: var(--success);
-        }
-        
-        .loan-details {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1px;
-            margin-bottom: 16px;
-            background: var(--gray-200);
-        }
-        
-        .detail-item {
-            background: white;
-            padding: 12px 8px;
-            text-align: center;
-        }
-        
-        .detail-value {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--gray-800);
-            margin-bottom: 2px;
-        }
-        
-        .detail-label {
-            font-size: 0.65rem;
-            color: var(--gray-600);
-        }
-        
-        .input-section {
-            margin-bottom: 12px;
-        }
-        
-        .input-field {
-            width: 100%;
-            padding: 16px;
-            font-size: 1rem;
-            font-weight: 500;
-            border: 2px solid var(--gray-300);
-            background: white;
-        }
-        
-        .input-field:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        
-        .payment-preview {
-            background: var(--gray-50);
-            border: 1px solid var(--gray-200);
-            padding: 16px;
-            margin-bottom: 12px;
-            display: none;
-        }
-        
-        .payment-preview.show {
-            display: block;
-        }
-        
-        .preview-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--gray-700);
-            margin-bottom: 12px;
-            text-align: center;
-        }
-        
-        .preview-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.875rem;
-        }
-        
-        .preview-row:last-child {
-            margin-bottom: 0;
-            padding-top: 8px;
-            border-top: 1px solid var(--gray-200);
-            font-weight: 600;
-        }
-        
-        .preview-label {
-            color: var(--gray-600);
-        }
-        
-        .preview-value {
-            font-weight: 500;
-            color: var(--gray-800);
-        }
-        
-        .preview-value.highlight {
-            color: var(--primary);
-        }
-        
-        .repay-btn {
-            width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 16px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 12px;
-        }
-        
-        .repay-btn:hover {
-            background: #1d4ed8;
-        }
-        
-        .repay-btn:disabled {
-            background: var(--gray-400);
-        }
-        
-        .quick-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1px;
-            background: var(--gray-200);
-        }
-        
-        .quick-btn {
-            background: white;
-            border: none;
-            padding: 12px 8px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            cursor: pointer;
-            color: var(--gray-700);
-        }
-        
-        .quick-btn:hover {
-            background: var(--gray-50);
-        }
-        
-        .progress-section {
-            background: var(--success);
-            color: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        
-        .progress-title {
-            font-size: 1rem;
-            font-weight: 600;
-        }
-        
-        .progress-percentage {
-            font-size: 1rem;
-            font-weight: 700;
-        }
-        
-        .progress-bar {
-            height: 8px;
-            background: rgba(255,255,255,0.3);
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: white;
-            width: 0%;
-        }
-        
-        .chart-container {
-            background: white;
-            border: 1px solid var(--gray-200);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .chart-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            text-align: center;
-            color: var(--gray-800);
-        }
-        
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            max-width: 414px;
-            width: 100%;
-            background: white;
-            border-top: 1px solid var(--gray-200);
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1px;
-            background: var(--gray-200);
-        }
-        
-        .nav-btn {
-            background: white;
-            border: none;
-            padding: 12px 8px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--gray-600);
-        }
-        
-        .nav-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .nav-icon {
-            font-size: 1.125rem;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .history-item {
-            background: white;
-            border: 1px solid var(--gray-200);
-            margin-bottom: 8px;
-            padding: 16px;
-            position: relative;
-        }
-        
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        
-        .history-amount {
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: var(--success);
-        }
-        
-        .history-date {
-            font-size: 0.75rem;
-            color: var(--gray-500);
-        }
-        
-        .history-details {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            font-size: 0.875rem;
-            color: var(--gray-600);
-        }
-        
-        .history-actions {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            display: flex;
-            gap: 8px;
-        }
-        
-        .edit-btn, .delete-btn {
-            background: none;
-            border: none;
-            font-size: 0.875rem;
-            cursor: pointer;
-            padding: 4px 8px;
-            color: var(--gray-500);
-        }
-        
-        .edit-btn:hover {
-            color: var(--primary);
-        }
-        
-        .delete-btn:hover {
-            color: var(--danger);
-        }
-        
-        .edit-form {
-            background: var(--gray-50);
-            border: 1px solid var(--gray-300);
-            padding: 16px;
-            margin-top: 12px;
-            display: none;
-        }
-        
-        .edit-form.show {
-            display: block;
-        }
-        
-        .edit-input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid var(--gray-300);
-            margin-bottom: 8px;
-            font-size: 0.875rem;
-        }
-        
-        .edit-actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .save-btn {
-            background: var(--success);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            font-size: 0.75rem;
-            cursor: pointer;
-        }
-        
-        .cancel-btn {
-            background: var(--gray-400);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            font-size: 0.75rem;
-            cursor: pointer;
-        }
-        
-        .calculator-card {
-            background: var(--primary);
-            color: white;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .calculator-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-        
-        .calculator-input {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            font-size: 0.875rem;
-            margin-bottom: 16px;
-        }
-        
-        .calculator-result {
-            background: rgba(255,255,255,0.1);
-            padding: 16px;
-            display: none;
-        }
-        
-        .calculator-result.show {
-            display: block;
-        }
-        
-        .result-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.875rem;
-        }
-        
-        .smart-suggestion {
-            background: var(--warning);
-            color: white;
-            padding: 16px;
-            margin-bottom: 20px;
-            text-align: center;
-            display: none;
-        }
-        
-        .smart-suggestion.show {
-            display: block;
-        }
-        
-        .suggestion-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .suggestion-text {
-            font-size: 0.875rem;
-            margin-bottom: 12px;
-        }
-        
-        .suggestion-btn {
-            background: white;
-            color: var(--warning);
-            border: none;
-            padding: 8px 16px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .toast {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--gray-800);
-            color: white;
-            padding: 12px 20px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            z-index: 1000;
-            max-width: 350px;
-            text-align: center;
-            display: none;
-        }
-        
-        .toast.show {
-            display: block;
-        }
-        
-        .toast.success {
-            background: var(--success);
-        }
-        
-        .toast.error {
-            background: var(--danger);
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray-500);
-        }
-        
-        .empty-icon {
-            font-size: 3rem;
-            margin-bottom: 16px;
-        }
-        
-        .empty-text {
-            font-size: 0.875rem;
-        }
-        
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        
-        .modal.show {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 24px;
-            max-width: 350px;
-            width: 90%;
-        }
-        
-        .modal-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        
-        .modal-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-        }
-        
-        .modal-btn.confirm {
-            background: var(--danger);
-            color: white;
-        }
-        
-        .modal-btn.cancel {
-            background: var(--gray-300);
-            color: var(--gray-700);
-        }
-        
-        @media (max-width: 480px) {
-            .container {
-                max-width: 100%;
-            }
-            
-            .bottom-nav {
-                max-width: 100%;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>返済管理</h1>
-            <div class="total-debt" id="totalDebt">¥0</div>
-            <div class="debt-subtitle">総残高</div>
-        </div>
-        
-        <div class="main-content">
-            <!-- タブコンテンツ: 返済 -->
-            <div class="tab-content active" id="repayment-tab">
-                <!-- 初期設定 -->
-                <div class="setup-section" id="setupSection">
-                    <h3>初期残高を設定してください</h3>
-                    <div class="setup-inputs">
-                        <input type="number" class="setup-input" id="acomInitial" placeholder="アコム残高">
-                        <input type="number" class="setup-input" id="smbcInitial" placeholder="三井住友残高">
-                    </div>
-                    <button class="setup-btn" onclick="setInitialBalances()">設定完了</button>
-                </div>
-                
-                <!-- スマート提案 -->
-                <div class="smart-suggestion" id="smartSuggestion">
-                    <div class="suggestion-title">スマート提案</div>
-                    <div class="suggestion-text" id="suggestionText"></div>
-                    <button class="suggestion-btn" onclick="applySuggestion()">提案を適用</button>
-                </div>
-                
-                <!-- クイック統計 -->
-                <div class="quick-stats">
-                    <div class="stat-card">
-                        <div class="stat-value" id="monthlyInterest">¥0</div>
-                        <div class="stat-label">月間利息</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="dailyInterest">¥0</div>
-                        <div class="stat-label">日割利息</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalPaid">¥0</div>
-                        <div class="stat-label">返済済み</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="savingsGoal">¥0</div>
-                        <div class="stat-label">節約額</div>
-                    </div>
-                </div>
-                
-                <!-- アコムカード -->
-                <div class="loan-card acom">
-                    <div class="loan-header">
-                        <div class="loan-title">
-                            <span>🏛️</span>
-                            <span>アコム</span>
-                        </div>
-                        <div class="loan-balance" id="acomBalance">¥0</div>
-                    </div>
-                    
-                    <div class="loan-details">
-                        <div class="detail-item">
-                            <div class="detail-value">18.00%</div>
-                            <div class="detail-label">年利</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-value" id="acomMonthlyInterest">¥0</div>
-                            <div class="detail-label">月利息</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-value" id="acomDailyInterest">¥0</div>
-                            <div class="detail-label">日利息</div>
-                        </div>
-                    </div>
-                    
-                    <div class="input-section">
-                        <input type="number" class="input-field" id="acomRepayment" 
-                               placeholder="返済金額を入力" oninput="updatePaymentPreview('acom')">
-                    </div>
-                    
-                    <div class="payment-preview" id="acomPreview">
-                        <div class="preview-title">返済内訳プレビュー</div>
-                        <div class="preview-row">
-                            <span class="preview-label">利息充当</span>
-                            <span class="preview-value" id="acomPreviewInterest">¥0</span>
-                        </div>
-                        <div class="preview-row">
-                            <span class="preview-label">元本充当</span>
-                            <span class="preview-value" id="acomPreviewPrincipal">¥0</span>
-                        </div>
-                        <div class="preview-row">
-                            <span class="preview-label">返済後残高</span>
-                            <span class="preview-value highlight" id="acomPreviewBalance">¥0</span>
-                        </div>
-                    </div>
-                    
-                    <button class="repay-btn" onclick="makeRepayment('acom')">返済実行</button>
-                    
-                    <div class="quick-actions">
-                        <button class="quick-btn" onclick="quickPayment('acom', 'interest')">利息分のみ</button>
-                        <button class="quick-btn" onclick="quickPayment('acom', 'minimum')">最小返済額</button>
-                    </div>
-                </div>
-                
-                <!-- 三井住友カード -->
-                <div class="loan-card smbc">
-                    <div class="loan-header">
-                        <div class="loan-title">
-                            <span>🏦</span>
-                            <span>三井住友</span>
-                        </div>
-                        <div class="loan-balance" id="smbcBalance">¥0</div>
-                    </div>
-                    
-                    <div class="loan-details">
-                        <div class="detail-item">
-                            <div class="detail-value">14.50%</div>
-                            <div class="detail-label">年利</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-value" id="smbcMonthlyInterest">¥0</div>
-                            <div class="detail-label">月利息</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-value" id="smbcDailyInterest">¥0</div>
-                            <div class="detail-label">日利息</div>
-                        </div>
-                    </div>
-                    
-                    <div class="input-section">
-                        <input type="number" class="input-field" id="smbcRepayment" 
-                               placeholder="返済金額を入力" oninput="updatePaymentPreview('smbc')">
-                    </div>
-                    
-                    <div class="payment-preview" id="smbcPreview">
-                        <div class="preview-title">返済内訳プレビュー</div>
-                        <div class="preview-row">
-                            <span class="preview-label">利息充当</span>
-                            <span class="preview-value" id="smbcPreviewInterest">¥0</span>
-                        </div>
-                        <div class="preview-row">
-                            <span class="preview-label">元本充当</span>
-                            <span class="preview-value" id="smbcPreviewPrincipal">¥0</span>
-                        </div>
-                        <div class="preview-row">
-                            <span class="preview-label">返済後残高</span>
-                            <span class="preview-value highlight" id="smbcPreviewBalance">¥0</span>
-                        </div>
-                    </div>
-                    
-                    <button class="repay-btn" onclick="makeRepayment('smbc')">返済実行</button>
-                    
-                    <div class="quick-actions">
-                        <button class="quick-btn" onclick="quickPayment('smbc', 'interest')">利息分のみ</button>
-                        <button class="quick-btn" onclick="quickPayment('smbc', 'minimum')">最小返済額</button>
-                    </div>
-                </div>
-                
-                <!-- 進捗セクション -->
-                <div class="progress-section">
-                    <div class="progress-header">
-                        <div class="progress-title">完済進捗</div>
-                        <div class="progress-percentage" id="progressPercentage">0%</div>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- タブコンテンツ: 計算機 -->
-            <div class="tab-content" id="calculator-tab">
-                <div class="calculator-card">
-                    <div class="calculator-title">完済日計算</div>
-                    <input type="number" class="calculator-input" id="monthlyPayment" 
-                           placeholder="月々の返済予定額" oninput="calculatePayoffDate()">
-                    <div class="calculator-result" id="payoffResult">
-                        <div class="result-row">
-                            <span>完済予定日</span>
-                            <span id="payoffDate">-</span>
-                        </div>
-                        <div class="result-row">
-                            <span>残り期間</span>
-                            <span id="payoffMonths">-</span>
-                        </div>
-                        <div class="result-row">
-                            <span>総利息額</span>
-                            <span id="totalInterest">-</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- タブコンテンツ: グラフ -->
-            <div class="tab-content" id="chart-tab">
-                <div class="chart-container">
-                    <div class="chart-title">残高推移グラフ</div>
-                    <canvas id="debtChart" width="360" height="280"></canvas>
-                </div>
-            </div>
-            
-            <!-- タブコンテンツ: 履歴 -->
-            <div class="tab-content" id="history-tab">
-                <div id="repaymentHistory">
-                    <div class="empty-state">
-                        <div class="empty-icon">📝</div>
-                        <div class="empty-text">まだ返済履歴がありません</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bottom-nav">
-            <button class="nav-btn active" onclick="switchTab('repayment')">
-                <div class="nav-icon">💳</div>
-                <div>返済</div>
-            </button>
-            <button class="nav-btn" onclick="switchTab('calculator')">
-                <div class="nav-icon">🧮</div>
-                <div>計算</div>
-            </button>
-            <button class="nav-btn" onclick="switchTab('chart')">
-                <div class="nav-icon">📊</div>
-                <div>グラフ</div>
-            </button>
-            <button class="nav-btn" onclick="switchTab('history')">
-                <div class="nav-icon">📝</div>
-                <div>履歴</div>
-            </button>
-        </div>
-    </div>
-    
-    <!-- 削除確認モーダル -->
-    <div class="modal" id="deleteModal">
-        <div class="modal-content">
-            <div class="modal-title">履歴を削除しますか？</div>
-            <div>この操作は取り消せません。残高も元に戻ります。</div>
-            <div class="modal-buttons">
-                <button class="modal-btn cancel" onclick="closeDeleteModal()">キャンセル</button>
-                <button class="modal-btn confirm" onclick="confirmDelete()">削除</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="toast" class="toast"></div>
-    
-    <script>
-        // アプリデータ
-        let appData = {
-            acom: {
-                balance: 0,
-                initialBalance: 0,
-                rate: 18.0
-            },
-            smbc: {
-                balance: 0,
-                initialBalance: 0,
-                rate: 14.5
-            },
-            history: [],
-            chartData: [],
-            stats: {
-                totalPaid: 0,
-                interestPaid: 0,
-                paymentCount: 0
-            }
-        };
-        
-        let currentTab = 'repayment';
-        let currentSuggestion = null;
-        let editingHistoryId = null;
-        let deleteHistoryId = null;
-        
-        // データ読み込み（互換性修正）
-        function loadData() {
-            const savedData = localStorage.getItem('loanRepaymentData');
-            if (savedData) {
-                try {
-                    const parsed = JSON.parse(savedData);
-                    appData = {...appData, ...parsed};
-                    
-                    // 金利を正しい値に修正
-                    appData.acom.rate = 18.0;
-                    appData.smbc.rate = 14.5;
-                    
-                    // 既存の履歴データにlenderCodeが無い場合は追加
-                    if (appData.history && Array.isArray(appData.history)) {
-                        appData.history.forEach(item => {
-                            if (!item.lenderCode && item.lender) {
-                                item.lenderCode = item.lender === 'アコム' ? 'acom' : 'smbc';
-                            }
-                        });
-                    }
-                    
-                    // 統計データが無い場合は初期化
-                    if (!appData.stats) {
-                        appData.stats = {
-                            totalPaid: 0,
-                            interestPaid: 0,
-                            paymentCount: 0
-                        };
-                    }
-                    
-                } catch (error) {
-                    console.error('データ読み込みエラー:', error);
-                    showToast('データの読み込みに失敗しました', 'error');
-                }
-            }
-            updateAllDisplays();
-        }
-        
-        // データ保存
-        function saveData() {
-            localStorage.setItem('loanRepaymentData', JSON.stringify(appData));
-        }
-        
-        // 初期残高設定
-        function setInitialBalances() {
-            const acomInitial = parseFloat(document.getElementById('acomInitial').value) || 0;
-            const smbcInitial = parseFloat(document.getElementById('smbcInitial').value) || 0;
-            
-            if (acomInitial === 0 && smbcInitial === 0) {
-                showToast('残高を入力してください', 'error');
-                return;
-            }
-            
-            appData.acom.balance = acomInitial;
-            appData.acom.initialBalance = acomInitial;
-            appData.smbc.balance = smbcInitial;
-            appData.smbc.initialBalance = smbcInitial;
-            
-            appData.chartData = [{
-                date: new Date().toLocaleDateString(),
-                acom: acomInitial,
-                smbc: smbcInitial,
-                total: acomInitial + smbcInitial
-            }];
-            
-            saveData();
-            updateAllDisplays();
-            showToast('設定完了！', 'success');
-            
-            document.getElementById('setupSection').style.display = 'none';
-            document.getElementById('acomInitial').value = '';
-            document.getElementById('smbcInitial').value = '';
-        }
-        
-        // 返済プレビュー更新
-        function updatePaymentPreview(lender) {
-            const inputElement = document.getElementById(lender + 'Repayment');
-            const previewElement = document.getElementById(lender + 'Preview');
-            const amount = parseFloat(inputElement.value) || 0;
-            
-            if (amount <= 0) {
-                previewElement.classList.remove('show');
-                return;
-            }
-            
-            const balance = appData[lender].balance;
-            const rate = appData[lender].rate;
-            const monthlyInterest = (balance * rate / 100) / 12;
-            const principal = Math.max(0, amount - monthlyInterest);
-            const newBalance = Math.max(0, balance - amount);
-            
-            document.getElementById(lender + 'PreviewInterest').textContent = '¥' + Math.round(monthlyInterest).toLocaleString();
-            document.getElementById(lender + 'PreviewPrincipal').textContent = '¥' + Math.round(principal).toLocaleString();
-            document.getElementById(lender + 'PreviewBalance').textContent = '¥' + newBalance.toLocaleString();
-            
-            previewElement.classList.add('show');
-            
-            if (amount > balance) {
-                inputElement.style.borderColor = 'var(--danger)';
-            } else {
-                inputElement.style.borderColor = 'var(--primary)';
-            }
-        }
-        
-        // 返済実行
-        function makeRepayment(lender) {
-            const inputElement = document.getElementById(lender + 'Repayment');
-            const amount = parseFloat(inputElement.value);
-            
-            if (!amount || amount <= 0) {
-                showToast('正しい金額を入力してください', 'error');
-                return;
-            }
-            
-            if (amount > appData[lender].balance) {
-                showToast('返済額が残高を超えています', 'error');
-                return;
-            }
-            
-            executeRepayment(lender, amount);
-        }
-        
-        // クイック返済
-        function quickPayment(lender, type) {
-            const balance = appData[lender].balance;
-            const rate = appData[lender].rate;
-            const monthlyInterest = (balance * rate / 100) / 12;
-            
-            let amount;
-            if (type === 'interest') {
-                amount = Math.ceil(monthlyInterest);
-            } else if (type === 'minimum') {
-                amount = Math.ceil(monthlyInterest * 2);
-            }
-            
-            if (amount > balance) amount = balance;
-            
-            document.getElementById(lender + 'Repayment').value = amount;
-            updatePaymentPreview(lender);
-        }
-        
-        // 実際の返済処理
-        function executeRepayment(lender, amount) {
-            const balance = appData[lender].balance;
-            const rate = appData[lender].rate;
-            const monthlyInterest = (balance * rate / 100) / 12;
-            const principal = Math.max(0, amount - monthlyInterest);
-            
-            appData[lender].balance = Math.max(0, balance - amount);
-            
-            appData.stats.totalPaid += amount;
-            appData.stats.interestPaid += Math.min(monthlyInterest, amount);
-            appData.stats.paymentCount++;
-            
-            const historyItem = {
-                id: Date.now(),
-                date: new Date().toLocaleDateString(),
-                time: new Date().toLocaleTimeString(),
-                lender: lender === 'acom' ? 'アコム' : '三井住友',
-                lenderCode: lender,
-                amount: amount,
-                interest: Math.min(monthlyInterest, amount),
-                principal: principal,
-                remainingBalance: appData[lender].balance
-            };
-            appData.history.unshift(historyItem);
-            
-            appData.chartData.push({
-                date: new Date().toLocaleDateString(),
-                acom: appData.acom.balance,
-                smbc: appData.smbc.balance,
-                total: appData.acom.balance + appData.smbc.balance
-            });
-            
-            if (appData.chartData.length > 30) {
-                appData.chartData = appData.chartData.slice(-30);
-            }
-            
-            saveData();
-            updateAllDisplays();
-            
-            document.getElementById(lender + 'Preview').classList.remove('show');
-            document.getElementById(lender + 'Repayment').value = '';
-            document.getElementById(lender + 'Repayment').style.borderColor = 'var(--gray-300)';
-            
-            if (appData[lender].balance === 0) {
-                showToast(`${lender === 'acom' ? 'アコム' : '三井住友'}完済おめでとう！`, 'success');
-                setTimeout(() => {
-                    if (appData.acom.balance === 0 && appData.smbc.balance === 0) {
-                        showToast('全借金完済！素晴らしい！', 'success');
-                    }
-                }, 1500);
-            } else {
-                showToast(`${amount.toLocaleString()}円返済完了`, 'success');
-            }
-            
-            generateSmartSuggestion();
-        }
-        
-        // 全表示更新
-        function updateAllDisplays() {
-            updateBalanceDisplay();
-            updateInterestDisplay();
-            updateStatsDisplay();
-            updateProgressDisplay();
-            updateChart();
-            updateHistory();
-            updateSetupVisibility();
-            generateSmartSuggestion();
-        }
-        
-        // 残高表示
-        function updateBalanceDisplay() {
-            document.getElementById('acomBalance').textContent = '¥' + appData.acom.balance.toLocaleString();
-            document.getElementById('smbcBalance').textContent = '¥' + appData.smbc.balance.toLocaleString();
-            
-            const totalDebt = appData.acom.balance + appData.smbc.balance;
-            document.getElementById('totalDebt').textContent = '¥' + totalDebt.toLocaleString();
-        }
-        
-        // 利息表示
-        function updateInterestDisplay() {
-            const acomMonthly = (appData.acom.balance * 18.0 / 100) / 12;
-            const smbcMonthly = (appData.smbc.balance * 14.5 / 100) / 12;
-            const totalMonthly = acomMonthly + smbcMonthly;
-            const totalDaily = totalMonthly / 30;
-            
-            document.getElementById('acomMonthlyInterest').textContent = '¥' + Math.round(acomMonthly).toLocaleString();
-            document.getElementById('acomDailyInterest').textContent = '¥' + Math.round(acomMonthly / 30).toLocaleString();
-            document.getElementById('smbcMonthlyInterest').textContent = '¥' + Math.round(smbcMonthly).toLocaleString();
-            document.getElementById('smbcDailyInterest').textContent = '¥' + Math.round(smbcMonthly / 30).toLocaleString();
-            
-            document.getElementById('monthlyInterest').textContent = '¥' + Math.round(totalMonthly).toLocaleString();
-            document.getElementById('dailyInterest').textContent = '¥' + Math.round(totalDaily).toLocaleString();
-        }
-        
-        // 統計表示
-        function updateStatsDisplay() {
-            document.getElementById('totalPaid').textContent = '¥' + appData.stats.totalPaid.toLocaleString();
-            
-            const initialTotal = appData.acom.initialBalance + appData.smbc.initialBalance;
-            const currentTotal = appData.acom.balance + appData.smbc.balance;
-            const savings = Math.max(0, initialTotal - currentTotal);
-            
-            document.getElementById('savingsGoal').textContent = '¥' + savings.toLocaleString();
-        }
-        
-        // 進捗表示
-        function updateProgressDisplay() {
-            const initialTotal = appData.acom.initialBalance + appData.smbc.initialBalance;
-            const currentTotal = appData.acom.balance + appData.smbc.balance;
-            
-            if (initialTotal === 0) {
-                document.getElementById('progressFill').style.width = '0%';
-                document.getElementById('progressPercentage').textContent = '0%';
-                return;
-            }
-            
-            const progress = ((initialTotal - currentTotal) / initialTotal) * 100;
-            document.getElementById('progressFill').style.width = Math.max(0, progress) + '%';
-            document.getElementById('progressPercentage').textContent = Math.round(progress) + '%';
-        }
-        
-        // スマート提案生成
-        function generateSmartSuggestion() {
-            const acomBalance = appData.acom.balance;
-            const smbcBalance = appData.smbc.balance;
-            const totalBalance = acomBalance + smbcBalance;
-            
-            if (totalBalance === 0) {
-                document.getElementById('smartSuggestion').classList.remove('show');
-                return;
-            }
-            
-            let suggestion = '';
-            let actionAmount = 0;
-            
-            if (acomBalance > smbcBalance && acomBalance > 0) {
-                const monthlyInterest = (acomBalance * 18.0 / 100) / 12;
-                actionAmount = Math.ceil(monthlyInterest * 3);
-                suggestion = `高金利のアコム(18%)を優先返済。¥${actionAmount.toLocaleString()}の返済が効果的です。`;
-                currentSuggestion = { lender: 'acom', amount: actionAmount };
-            } else if (smbcBalance > 0) {
-                const monthlyInterest = (smbcBalance * 14.5 / 100) / 12;
-                actionAmount = Math.ceil(monthlyInterest * 3);
-                suggestion = `三井住友に¥${actionAmount.toLocaleString()}を返済しましょう。`;
-                currentSuggestion = { lender: 'smbc', amount: actionAmount };
-            }
-            
-            if (suggestion) {
-                document.getElementById('suggestionText').textContent = suggestion;
-                document.getElementById('smartSuggestion').classList.add('show');
-            } else {
-                document.getElementById('smartSuggestion').classList.remove('show');
-            }
-        }
-        
-        // 提案適用
-        function applySuggestion() {
-            if (currentSuggestion) {
-                document.getElementById(currentSuggestion.lender + 'Repayment').value = currentSuggestion.amount;
-                updatePaymentPreview(currentSuggestion.lender);
-                showToast('提案を設定しました', 'success');
-            }
-        }
-        
-        // 完済日計算
-        function calculatePayoffDate() {
-            const monthlyPayment = parseFloat(document.getElementById('monthlyPayment').value) || 0;
-            const resultDiv = document.getElementById('payoffResult');
-            
-            if (monthlyPayment <= 0) {
-                resultDiv.classList.remove('show');
-                return;
-            }
-            
-            const totalBalance = appData.acom.balance + appData.smbc.balance;
-            const totalMonthlyInterest = 
-                ((appData.acom.balance * 18.0 / 100) / 12) + 
-                ((appData.smbc.balance * 14.5 / 100) / 12);
-            
-            if (monthlyPayment <= totalMonthlyInterest) {
-                document.getElementById('payoffDate').textContent = '返済不可';
-                document.getElementById('payoffMonths').textContent = '利息以下';
-                document.getElementById('totalInterest').textContent = '∞';
-                resultDiv.classList.add('show');
-                return;
-            }
-            
-            let remainingBalance = totalBalance;
-            let totalInterestPaid = 0;
-            let months = 0;
-            
-            while (remainingBalance > 0 && months < 600) {
-                const currentInterest = Math.min(totalMonthlyInterest, remainingBalance * 0.015);
-                const principalPayment = Math.min(monthlyPayment - currentInterest, remainingBalance);
-                
-                if (principalPayment <= 0) break;
-                
-                remainingBalance -= principalPayment;
-                totalInterestPaid += currentInterest;
-                months++;
-            }
-            
-            const payoffDate = new Date();
-            payoffDate.setMonth(payoffDate.getMonth() + months);
-            
-            document.getElementById('payoffDate').textContent = payoffDate.toLocaleDateString();
-            document.getElementById('payoffMonths').textContent = months + 'ヶ月';
-            document.getElementById('totalInterest').textContent = '¥' + Math.round(totalInterestPaid).toLocaleString();
-            
-            resultDiv.classList.add('show');
-        }
-        
-        // グラフ更新
-        function updateChart() {
-            const canvas = document.getElementById('debtChart');
-            if (!canvas) return;
-            
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            if (appData.chartData.length === 0) {
-                ctx.fillStyle = '#9ca3af';
-                ctx.font = '14px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('データがありません', canvas.width / 2, canvas.height / 2);
-                return;
-            }
-            
-            const padding = 40;
-            const chartWidth = canvas.width - 2 * padding;
-            const chartHeight = canvas.height - 2 * padding;
-            
-            const maxValue = Math.max(...appData.chartData.map(d => d.total));
-            if (maxValue === 0) return;
-            
-            // グリッド
-            ctx.strokeStyle = '#e5e7eb';
-            ctx.lineWidth = 1;
-            ctx.fillStyle = '#6b7280';
-            ctx.font = '10px sans-serif';
-            ctx.textAlign = 'right';
-            
-            for (let i = 0; i <= 5; i++) {
-                const y = padding + (chartHeight * i / 5);
-                ctx.beginPath();
-                ctx.moveTo(padding, y);
-                ctx.lineTo(padding + chartWidth, y);
-                ctx.stroke();
-                
-                const value = Math.round(maxValue * (5 - i) / 5);
-                ctx.fillText('¥' + (value / 10000).toFixed(0) + '万', padding - 5, y + 3);
-            }
-            
-            // データライン
-            function drawLine(dataKey, color) {
-                const data = appData.chartData.map(d => d[dataKey]);
-                if (data.length < 2) return;
-                
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                
-                for (let i = 0; i < data.length; i++) {
-                    const x = padding + (chartWidth * i / Math.max(1, data.length - 1));
-                    const y = padding + chartHeight - (chartHeight * data[i] / maxValue);
-                    
-                    if (i === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                }
-                ctx.stroke();
-                
-                // ポイント
-                ctx.fillStyle = color;
-                for (let i = 0; i < data.length; i++) {
-                    const x = padding + (chartWidth * i / Math.max(1, data.length - 1));
-                    const y = padding + chartHeight - (chartHeight * data[i] / maxValue);
-                    
-                    ctx.beginPath();
-                    ctx.arc(x, y, 3, 0, 2 * Math.PI);
-                    ctx.fill();
-                }
-            }
-            
-            drawLine('total', '#2563eb');
-            drawLine('acom', '#dc2626');
-            drawLine('smbc', '#16a34a');
-            
-            // 凡例
-            ctx.font = '10px sans-serif';
-            ctx.textAlign = 'left';
-            
-            ctx.fillStyle = '#2563eb';
-            ctx.fillRect(padding, 10, 10, 10);
-            ctx.fillStyle = '#374151';
-            ctx.fillText('総額', padding + 15, 18);
-            
-            ctx.fillStyle = '#dc2626';
-            ctx.fillRect(padding + 60, 10, 10, 10);
-            ctx.fillText('アコム', padding + 75, 18);
-            
-            ctx.fillStyle = '#16a34a';
-            ctx.fillRect(padding + 120, 10, 10, 10);
-            ctx.fillText('三井住友', padding + 135, 18);
-        }
-        
-        // 履歴更新
-        function updateHistory() {
-            const historyContainer = document.getElementById('repaymentHistory');
-            
-            if (appData.history.length === 0) {
-                historyContainer.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">📝</div>
-                        <div class="empty-text">まだ返済履歴がありません</div>
-                    </div>
-                `;
-                return;
-            }
-            
-            historyContainer.innerHTML = appData.history.slice(0, 20).map(item => `
-                <div class="history-item">
-                    <div class="history-actions">
-                        <button class="edit-btn" onclick="startEditHistory(${item.id})">✏️</button>
-                        <button class="delete-btn" onclick="showDeleteModal(${item.id})">🗑️</button>
-                    </div>
-                    <div class="history-header">
-                        <div>
-                            <strong>${item.lender}</strong>
-                            <div class="history-date">${item.date} ${item.time}</div>
-                        </div>
-                        <div class="history-amount">¥${item.amount.toLocaleString()}</div>
-                    </div>
-                    <div class="history-details">
-                        <span>利息: ¥${Math.round(item.interest).toLocaleString()}</span>
-                        <span>元本: ¥${Math.round(item.principal).toLocaleString()}</span>
-                        <span>残高: ¥${item.remainingBalance.toLocaleString()}</span>
-                    </div>
-                    <div class="edit-form" id="editForm${item.id}">
-                        <input type="number" class="edit-input" id="editAmount${item.id}" value="${item.amount}" placeholder="返済金額">
-                        <div class="edit-actions">
-                            <button class="save-btn" onclick="saveEditHistory(${item.id})">保存</button>
-                            <button class="cancel-btn" onclick="cancelEditHistory(${item.id})">キャンセル</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        // 履歴編集開始
-        function startEditHistory(historyId) {
-            document.getElementById(`editForm${historyId}`).classList.add('show');
-            editingHistoryId = historyId;
-        }
-        
-        // 履歴編集キャンセル
-        function cancelEditHistory(historyId) {
-            document.getElementById(`editForm${historyId}`).classList.remove('show');
-            editingHistoryId = null;
-        }
-        
-        // 履歴編集保存
-        function saveEditHistory(historyId) {
-            const newAmount = parseFloat(document.getElementById(`editAmount${historyId}`).value);
-            
-            if (!newAmount || newAmount <= 0) {
-                showToast('正しい金額を入力してください', 'error');
-                return;
-            }
-            
-            const historyIndex = appData.history.findIndex(h => h.id === historyId);
-            if (historyIndex === -1) {
-                showToast('履歴が見つかりません', 'error');
-                return;
-            }
-            
-            const historyItem = appData.history[historyIndex];
-            const oldAmount = historyItem.amount;
-            
-            // lenderCodeがない場合は lender から推定
-            let lenderCode = historyItem.lenderCode;
-            if (!lenderCode) {
-                lenderCode = historyItem.lender === 'アコム' ? 'acom' : 'smbc';
-                // 履歴にlenderCodeを追加
-                historyItem.lenderCode = lenderCode;
-            }
-            
-            // 対象の残高データが存在するかチェック
-            if (!appData[lenderCode]) {
-                showToast('データエラーが発生しました', 'error');
-                return;
-            }
-            
-            // 残高を元に戻す
-            appData[lenderCode].balance += oldAmount;
-            appData.stats.totalPaid -= oldAmount;
-            appData.stats.interestPaid -= historyItem.interest;
-            
-            // 新しい金額で再計算
-            const balance = appData[lenderCode].balance;
-            const rate = appData[lenderCode].rate;
-            const monthlyInterest = (balance * rate / 100) / 12;
-            const principal = Math.max(0, newAmount - monthlyInterest);
-            
-            // 新しい値で更新
-            appData[lenderCode].balance = Math.max(0, balance - newAmount);
-            appData.stats.totalPaid += newAmount;
-            appData.stats.interestPaid += Math.min(monthlyInterest, newAmount);
-            
-            // 履歴アイテム更新
-            historyItem.amount = newAmount;
-            historyItem.interest = Math.min(monthlyInterest, newAmount);
-            historyItem.principal = principal;
-            historyItem.remainingBalance = appData[lenderCode].balance;
-            
-            // グラフデータも更新
-            updateChartDataAfterEdit();
-            
-            saveData();
-            updateAllDisplays();
-            showToast('履歴を更新しました', 'success');
-            
-            document.getElementById(`editForm${historyId}`).classList.remove('show');
-            editingHistoryId = null;
-        }
-        
-        // 削除モーダル表示
-        function showDeleteModal(historyId) {
-            deleteHistoryId = historyId;
-            document.getElementById('deleteModal').classList.add('show');
-        }
-        
-        // 削除モーダル閉じる
-        function closeDeleteModal() {
-            deleteHistoryId = null;
-            document.getElementById('deleteModal').classList.remove('show');
-        }
-        
-        // 履歴削除実行
-        function confirmDelete() {
-            if (!deleteHistoryId) return;
-            
-            const historyIndex = appData.history.findIndex(h => h.id === deleteHistoryId);
-            if (historyIndex === -1) {
-                showToast('履歴が見つかりません', 'error');
-                closeDeleteModal();
-                return;
-            }
-            
-            const historyItem = appData.history[historyIndex];
-            
-            // lenderCodeがない場合は lender から推定
-            let lenderCode = historyItem.lenderCode;
-            if (!lenderCode) {
-                lenderCode = historyItem.lender === 'アコム' ? 'acom' : 'smbc';
-            }
-            
-            // 対象の残高データが存在するかチェック
-            if (!appData[lenderCode]) {
-                showToast('データエラーが発生しました', 'error');
-                closeDeleteModal();
-                return;
-            }
-            
-            // 残高を元に戻す
-            appData[lenderCode].balance += historyItem.amount;
-            appData.stats.totalPaid -= historyItem.amount;
-            appData.stats.interestPaid -= historyItem.interest;
-            appData.stats.paymentCount--;
-            
-            // 履歴から削除
-            appData.history.splice(historyIndex, 1);
-            
-            // グラフデータ更新
-            updateChartDataAfterEdit();
-            
-            saveData();
-            updateAllDisplays();
-            showToast('履歴を削除しました', 'success');
-            
-            closeDeleteModal();
-        }
-        
-        // グラフデータ再計算
-        function updateChartDataAfterEdit() {
-            // 簡易的な実装：最新の残高でグラフデータを更新
-            if (appData.chartData.length > 0) {
-                const lastData = appData.chartData[appData.chartData.length - 1];
-                lastData.acom = appData.acom.balance;
-                lastData.smbc = appData.smbc.balance;
-                lastData.total = appData.acom.balance + appData.smbc.balance;
-            }
-        }
-        
-        // 初期設定の表示/非表示
-        function updateSetupVisibility() {
-            const setupSection = document.getElementById('setupSection');
-            const hasData = appData.acom.initialBalance > 0 || appData.smbc.initialBalance > 0;
-            setupSection.style.display = hasData ? 'none' : 'block';
-        }
-        
-        // タブ切り替え
-        function switchTab(tabName) {
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(tabName + '-tab').classList.add('active');
-            
-            currentTab = tabName;
-            
-            if (tabName === 'chart') {
-                setTimeout(updateChart, 100);
-            }
-        }
-        
-        // トースト表示
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast ${type} show`;
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-        
-        // キーボードショートカット
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && e.target.classList.contains('input-field')) {
-                const lender = e.target.id.includes('acom') ? 'acom' : 'smbc';
-                makeRepayment(lender);
-            }
-            
-            if (e.key === 'Escape') {
-                closeDeleteModal();
-                if (editingHistoryId) {
-                    cancelEditHistory(editingHistoryId);
-                }
-            }
+/* =========================
+   借金返済PWA アプリ 完全修正版 app.js
+   省略なし。重複定義や混入HTMLを排除済み。
+   ========================= */
+
+/* グローバル状態 */
+let appData = {
+  acom: {
+    balance: 0,
+    initialBalance: 0,
+    rate: 18.0
+  },
+  smbc: {
+    balance: 0,
+    initialBalance: 0,
+    rate: 14.5
+  },
+  history: [],
+  chartData: [],
+  stats: {
+    totalPaid: 0,
+    interestPaid: 0,
+    paymentCount: 0
+  },
+  incomes: [],
+  expenses: [],
+  budgetData: {
+    monthlyIncome: 0,
+    monthlyExpense: 0,
+    availableForRepayment: 0
+  }
+};
+
+let currentTab = 'repayment';
+let currentSuggestion = null;
+let editingHistoryId = null;
+let deleteHistoryId = null;
+let currentDate = new Date();
+let editingIncomeId = null;
+let editingExpenseId = null;
+let deleteType = null;
+let deleteItemId = null;
+
+/* ユーティリティ */
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  toast.textContent = message;
+  toast.className = `toast ${type} show`;
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3000);
+}
+
+function getFrequencyText(freq) {
+  const frequencies = {
+    'monthly': '毎月',
+    'weekly': '毎週',
+    'biweekly': '隔週',
+    'once': '1回のみ'
+  };
+  return frequencies[freq] || freq;
+}
+
+function getCategoryText(category) {
+  const categories = {
+    'housing': '住居費',
+    'utilities': '光熱費',
+    'communication': '通信費',
+    'insurance': '保険',
+    'subscription': 'サブスク',
+    'loan': 'ローン',
+    'other': 'その他'
+  };
+  return categories[category] || category;
+}
+
+function getMethodText(method) {
+  const methods = {
+    'credit': 'クレカ',
+    'bank': '銀行',
+    'cash': '現金'
+  };
+  return methods[method] || method;
+}
+
+/* ローカルストレージ */
+function saveData() {
+  localStorage.setItem('loanRepaymentData', JSON.stringify(appData));
+}
+
+function loadData() {
+  const savedData = localStorage.getItem('loanRepaymentData');
+  if (savedData) {
+    try {
+      const parsed = JSON.parse(savedData);
+      appData = { ...appData, ...parsed };
+
+      // 金利は固定で再設定
+      appData.acom.rate = 18.0;
+      appData.smbc.rate = 14.5;
+
+      // 互換: 旧履歴にlenderCodeがない場合を補完
+      if (appData.history && Array.isArray(appData.history)) {
+        appData.history.forEach(item => {
+          if (!item.lenderCode && item.lender) {
+            item.lenderCode = item.lender === 'アコム' ? 'acom' : 'smbc';
+          }
         });
-        
-        // PWA Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(registration => console.log('SW registered'))
-                    .catch(error => console.log('SW registration failed'));
-            });
-        }
-        
-        // アプリ初期化
-        document.addEventListener('DOMContentLoaded', function() {
-            loadData();
-            setInterval(updateInterestDisplay, 60000);
-        });
-    </script>
-</body>
-</html>
+      }
+
+      // 互換: 各配列やstats/budgetDataの存在保証
+      if (!appData.stats) {
+        appData.stats = { totalPaid: 0, interestPaid: 0, paymentCount: 0 };
+      }
+      if (!Array.isArray(appData.incomes)) appData.incomes = [];
+      if (!Array.isArray(appData.expenses)) appData.expenses = [];
+      if (!appData.budgetData) {
+        appData.budgetData = { monthlyIncome: 0, monthlyExpense: 0, availableForRepayment: 0 };
+      }
+
+    } catch (error) {
+      console.error('データ読み込みエラー:', error);
+      showToast('データの読み込みに失敗しました', 'error');
+    }
+  }
+  updateAllDisplays();
+}
+
+/* 初期残高設定 */
+function setInitialBalances() {
+  const acomInitial = parseFloat(document.getElementById('acomInitial')?.value) || 0;
+  const smbcInitial = parseFloat(document.getElementById('smbcInitial')?.value) || 0;
+
+  if (acomInitial === 0 && smbcInitial === 0) {
+    showToast('残高を入力してください', 'error');
+    return;
+  }
+
+  appData.acom.balance = acomInitial;
+  appData.acom.initialBalance = acomInitial;
+  appData.smbc.balance = smbcInitial;
+  appData.smbc.initialBalance = smbcInitial;
+
+  appData.chartData = [{
+    date: new Date().toLocaleDateString(),
+    acom: acomInitial,
+    smbc: smbcInitial,
+    total: acomInitial + smbcInitial
+  }];
+
+  saveData();
+  updateAllDisplays();
+  showToast('設定完了！', 'success');
+
+  const setup = document.getElementById('setupSection');
+  if (setup) setup.style.display = 'none';
+  const acomI = document.getElementById('acomInitial');
+  const smbcI = document.getElementById('smbcInitial');
+  if (acomI) acomI.value = '';
+  if (smbcI) smbcI.value = '';
+}
+
+/* 返済プレビュー */
+function updatePaymentPreview(lender) {
+  const inputElement = document.getElementById(lender + 'Repayment');
+  const previewElement = document.getElementById(lender + 'Preview');
+  if (!inputElement || !previewElement) return;
+
+  const amount = parseFloat(inputElement.value) || 0;
+
+  if (amount <= 0) {
+    previewElement.classList.remove('show');
+    return;
+  }
+
+  const balance = appData[lender].balance;
+  const rate = appData[lender].rate;
+  const monthlyInterest = (balance * rate / 100) / 12;
+  const principal = Math.max(0, amount - monthlyInterest);
+  const newBalance = Math.max(0, balance - amount);
+
+  const iEl = document.getElementById(lender + 'PreviewInterest');
+  const pEl = document.getElementById(lender + 'PreviewPrincipal');
+  const bEl = document.getElementById(lender + 'PreviewBalance');
+  if (iEl) iEl.textContent = '¥' + Math.round(monthlyInterest).toLocaleString();
+  if (pEl) pEl.textContent = '¥' + Math.round(principal).toLocaleString();
+  if (bEl) bEl.textContent = '¥' + newBalance.toLocaleString();
+
+  previewElement.classList.add('show');
+
+  if (amount > balance) {
+    inputElement.style.borderColor = 'var(--danger)';
+  } else {
+    inputElement.style.borderColor = 'var(--primary)';
+  }
+}
+
+/* 返済トリガ */
+function makeRepayment(lender) {
+  const inputElement = document.getElementById(lender + 'Repayment');
+  if (!inputElement) return;
+
+  const amount = parseFloat(inputElement.value);
+
+  if (!amount || amount <= 0) {
+    showToast('正しい金額を入力してください', 'error');
+    return;
+  }
+
+  if (amount > appData[lender].balance) {
+    showToast('返済額が残高を超えています', 'error');
+    return;
+  }
+
+  executeRepayment(lender, amount);
+}
+
+/* クイック返済 */
+function quickPayment(lender, type) {
+  const balance = appData[lender].balance;
+  const rate = appData[lender].rate;
+  const monthlyInterest = (balance * rate / 100) / 12;
+
+  let amount;
+  if (type === 'interest') {
+    amount = Math.ceil(monthlyInterest);
+  } else if (type === 'minimum') {
+    amount = Math.ceil(monthlyInterest * 2);
+  } else {
+    return;
+  }
+
+  if (amount > balance) amount = balance;
+
+  const input = document.getElementById(lender + 'Repayment');
+  if (input) {
+    input.value = amount;
+    updatePaymentPreview(lender);
+  }
+}
+
+/* 実際の返済処理 */
+function executeRepayment(lender, amount) {
+  const balance = appData[lender].balance;
+  const rate = appData[lender].rate;
+  const monthlyInterest = (balance * rate / 100) / 12;
+  const principal = Math.max(0, amount - monthlyInterest);
+
+  appData[lender].balance = Math.max(0, balance - amount);
+
+  appData.stats.totalPaid += amount;
+  appData.stats.interestPaid += Math.min(monthlyInterest, amount);
+  appData.stats.paymentCount++;
+
+  const historyItem = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString(),
+    time: new Date().toLocaleTimeString(),
+    lender: lender === 'acom' ? 'アコム' : '三井住友',
+    lenderCode: lender,
+    amount: amount,
+    interest: Math.min(monthlyInterest, amount),
+    principal: principal,
+    remainingBalance: appData[lender].balance
+  };
+  appData.history.unshift(historyItem);
+
+  appData.chartData.push({
+    date: new Date().toLocaleDateString(),
+    acom: appData.acom.balance,
+    smbc: appData.smbc.balance,
+    total: appData.acom.balance + appData.smbc.balance
+  });
+
+  if (appData.chartData.length > 30) {
+    appData.chartData = appData.chartData.slice(-30);
+  }
+
+  saveData();
+  updateAllDisplays();
+
+  const preview = document.getElementById(lender + 'Preview');
+  const input = document.getElementById(lender + 'Repayment');
+  if (preview) preview.classList.remove('show');
+  if (input) {
+    input.value = '';
+    input.style.borderColor = 'var(--gray-300)';
+  }
+
+  if (appData[lender].balance === 0) {
+    showToast(`${lender === 'acom' ? 'アコム' : '三井住友'}完済おめでとう！`, 'success');
+    setTimeout(() => {
+      if (appData.acom.balance === 0 && appData.smbc.balance === 0) {
+        showToast('全借金完済！素晴らしい！', 'success');
+      }
+    }, 1500);
+  } else {
+    showToast(`${amount.toLocaleString()}円返済完了`, 'success');
+  }
+
+  generateSmartSuggestion();
+}
+
+/* 画面一括更新 */
+function updateAllDisplays() {
+  updateBalanceDisplay();
+  updateInterestDisplay();
+  updateStatsDisplay();
+  updateProgressDisplay();
+  updateChart();
+  updateHistory();
+  updateSetupVisibility();
+  updateIncomeList();
+  updateExpenseList();
+  updateBudgetCalculation();
+  updateCalendar();
+  generateSmartSuggestion();
+}
+
+/* 残高表示 */
+function updateBalanceDisplay() {
+  const acomEl = document.getElementById('acomBalance');
+  const smbcEl = document.getElementById('smbcBalance');
+  const totalEl = document.getElementById('totalDebt');
+
+  if (acomEl) acomEl.textContent = '¥' + appData.acom.balance.toLocaleString();
+  if (smbcEl) smbcEl.textContent = '¥' + appData.smbc.balance.toLocaleString();
+
+  const totalDebt = appData.acom.balance + appData.smbc.balance;
+  if (totalEl) totalEl.textContent = '¥' + totalDebt.toLocaleString();
+}
+
+/* 利息表示 */
+function updateInterestDisplay() {
+  const acomMonthly = (appData.acom.balance * 18.0 / 100) / 12;
+  const smbcMonthly = (appData.smbc.balance * 14.5 / 100) / 12;
+  const totalMonthly = acomMonthly + smbcMonthly;
+  const totalDaily = totalMonthly / 30;
+
+  const aM = document.getElementById('acomMonthlyInterest');
+  const aD = document.getElementById('acomDailyInterest');
+  const sM = document.getElementById('smbcMonthlyInterest');
+  const sD = document.getElementById('smbcDailyInterest');
+  const mT = document.getElementById('monthlyInterest');
+  const dT = document.getElementById('dailyInterest');
+
+  if (aM) aM.textContent = '¥' + Math.round(acomMonthly).toLocaleString();
+  if (aD) aD.textContent = '¥' + Math.round(acomMonthly / 30).toLocaleString();
+  if (sM) sM.textContent = '¥' + Math.round(smbcMonthly).toLocaleString();
+  if (sD) sD.textContent = '¥' + Math.round(smbcMonthly / 30).toLocaleString();
+  if (mT) mT.textContent = '¥' + Math.round(totalMonthly).toLocaleString();
+  if (dT) dT.textContent = '¥' + Math.round(totalDaily).toLocaleString();
+}
+
+/* 統計表示 */
+function updateStatsDisplay() {
+  const totalPaidEl = document.getElementById('totalPaid');
+  if (totalPaidEl) totalPaidEl.textContent = '¥' + appData.stats.totalPaid.toLocaleString();
+
+  const initialTotal = appData.acom.initialBalance + appData.smbc.initialBalance;
+  const currentTotal = appData.acom.balance + appData.smbc.balance;
+  const savings = Math.max(0, initialTotal - currentTotal);
+
+  const savingsEl = document.getElementById('savingsGoal');
+  if (savingsEl) savingsEl.textContent = '¥' + savings.toLocaleString();
+}
+
+/* 進捗表示 */
+function updateProgressDisplay() {
+  const initialTotal = appData.acom.initialBalance + appData.smbc.initialBalance;
+  const currentTotal = appData.acom.balance + appData.smbc.balance;
+
+  const fill = document.getElementById('progressFill');
+  const percent = document.getElementById('progressPercentage');
+
+  if (initialTotal === 0) {
+    if (fill) fill.style.width = '0%';
+    if (percent) percent.textContent = '0%';
+    return;
+  }
+
+  const progress = ((initialTotal - currentTotal) / initialTotal) * 100;
+  if (fill) fill.style.width = Math.max(0, progress) + '%';
+  if (percent) percent.textContent = Math.round(progress) + '%';
+}
+
+/* 履歴 */
+function updateHistory() {
+  const historyContainer = document.getElementById('repaymentHistory');
+  if (!historyContainer) return;
+
+  if (!appData.history.length) {
+    historyContainer.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <div class="empty-text">まだ返済履歴がありません</div>
+      </div>`;
+    return;
+  }
+
+  historyContainer.innerHTML = appData.history.slice(0, 20).map(item => `
+    <div class="history-item">
+      <div class="history-actions">
+        <button class="edit-btn" onclick="startEditHistory(${item.id})">✏️</button>
+        <button class="delete-btn" onclick="showDeleteModal(${item.id})">🗑️</button>
+      </div>
+      <div class="history-header">
+        <div>
+          <strong>${item.lender}</strong>
+          <div class="history-date">${item.date} ${item.time}</div>
+        </div>
+        <div class="history-amount">¥${item.amount.toLocaleString()}</div>
+      </div>
+      <div class="history-details">
+        <span>利息: ¥${Math.round(item.interest).toLocaleString()}</span>
+        <span>元本: ¥${Math.round(item.principal).toLocaleString()}</span>
+        <span>残高: ¥${item.remainingBalance.toLocaleString()}</span>
+      </div>
+      <div class="edit-form" id="editForm${item.id}">
+        <input type="number" class="edit-input" id="editAmount${item.id}" value="${item.amount}" placeholder="返済金額">
+        <div class="edit-actions">
+          <button class="save-btn" onclick="saveEditHistory(${item.id})">保存</button>
+          <button class="cancel-btn" onclick="cancelEditHistory(${item.id})">キャンセル</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* 履歴編集 */
+function startEditHistory(historyId) {
+  const form = document.getElementById(`editForm${historyId}`);
+  if (form) form.classList.add('show');
+  editingHistoryId = historyId;
+}
+
+function cancelEditHistory(historyId) {
+  const form = document.getElementById(`editForm${historyId}`);
+  if (form) form.classList.remove('show');
+  editingHistoryId = null;
+}
+
+function saveEditHistory(historyId) {
+  const input = document.getElementById(`editAmount${historyId}`);
+  const newAmount = parseFloat(input?.value);
+
+  if (!newAmount || newAmount <= 0) {
+    showToast('正しい金額を入力してください', 'error');
+    return;
+  }
+
+  const historyIndex = appData.history.findIndex(h => h.id === historyId);
+  if (historyIndex === -1) {
+    showToast('履歴が見つかりません', 'error');
+    return;
+  }
+
+  const historyItem = appData.history[historyIndex];
+  const oldAmount = historyItem.amount;
+
+  let lenderCode = historyItem.lenderCode;
+  if (!lenderCode) {
+    lenderCode = historyItem.lender === 'アコム' ? 'acom' : 'smbc';
+    historyItem.lenderCode = lenderCode;
+  }
+
+  if (!appData[lenderCode]) {
+    showToast('データエラーが発生しました', 'error');
+    return;
+  }
+
+  // 旧金額を巻き戻し
+  appData[lenderCode].balance += oldAmount;
+  appData.stats.totalPaid -= oldAmount;
+  appData.stats.interestPaid -= historyItem.interest;
+
+  // 新金額で再計算
+  const balance = appData[lenderCode].balance;
+  const rate = appData[lenderCode].rate;
+  const monthlyInterest = (balance * rate / 100) / 12;
+  const principal = Math.max(0, newAmount - monthlyInterest);
+
+  appData[lenderCode].balance = Math.max(0, balance - newAmount);
+  appData.stats.totalPaid += newAmount;
+  appData.stats.interestPaid += Math.min(monthlyInterest, newAmount);
+
+  historyItem.amount = newAmount;
+  historyItem.interest = Math.min(monthlyInterest, newAmount);
+  historyItem.principal = principal;
+  historyItem.remainingBalance = appData[lenderCode].balance;
+
+  updateChartDataAfterEdit();
+
+  saveData();
+  updateAllDisplays();
+  showToast('履歴を更新しました', 'success');
+
+  cancelEditHistory(historyId);
+}
+
+/* 履歴削除 */
+function showDeleteModal(historyId) {
+  deleteType = 'history';
+  deleteItemId = historyId;
+  const modal = document.getElementById('deleteModal');
+  if (modal) modal.classList.add('show');
+}
+
+function deleteItem(type, id) {
+  deleteType = type;
+  deleteItemId = id;
+  const modal = document.getElementById('deleteModal');
+  if (modal) modal.classList.add('show');
+}
+
+function confirmDelete() {
+  if (deleteType === 'income') {
+    const index = appData.incomes.findIndex(i => i.id === deleteItemId);
+    if (index !== -1) {
+      appData.incomes.splice(index, 1);
+      showToast('収入を削除しました', 'success');
+    }
+  } else if (deleteType === 'expense') {
+    const index = appData.expenses.findIndex(e => e.id === deleteItemId);
+    if (index !== -1) {
+      appData.expenses.splice(index, 1);
+      showToast('固定費を削除しました', 'success');
+    }
+  } else if (deleteType === 'history') {
+    const historyIndex = appData.history.findIndex(h => h.id === deleteItemId);
+    if (historyIndex === -1) {
+      showToast('履歴が見つかりません', 'error');
+      closeDeleteModal();
+      return;
+    }
+    const historyItem = appData.history[historyIndex];
+    let lenderCode = historyItem.lenderCode;
+    if (!lenderCode) {
+      lenderCode = historyItem.lender === 'アコム' ? 'acom' : 'smbc';
+    }
+    if (!appData[lenderCode]) {
+      showToast('データエラーが発生しました', 'error');
+      closeDeleteModal();
+      return;
+    }
+
+    appData[lenderCode].balance += historyItem.amount;
+    appData.stats.totalPaid -= historyItem.amount;
+    appData.stats.interestPaid -= historyItem.interest;
+    appData.stats.paymentCount--;
+
+    appData.history.splice(historyIndex, 1);
+    updateChartDataAfterEdit();
+    showToast('履歴を削除しました', 'success');
+  }
+
+  saveData();
+  updateAllDisplays();
+  closeDeleteModal();
+}
+
+function closeDeleteModal() {
+  deleteType = null;
+  deleteItemId = null;
+  deleteHistoryId = null;
+  const modal = document.getElementById('deleteModal');
+  if (modal) modal.classList.remove('show');
+}
+
+/* 収入モーダル */
+function showIncomeModal() {
+  const m = document.getElementById('incomeModal');
+  if (m) m.classList.add('show');
+}
+
+function closeIncomeModal() {
+  const m = document.getElementById('incomeModal');
+  if (m) m.classList.remove('show');
+  clearIncomeForm();
+}
+
+function clearIncomeForm() {
+  const name = document.getElementById('incomeName');
+  const amount = document.getElementById('incomeAmount');
+  const date = document.getElementById('incomeDate');
+  const type = document.getElementById('incomeType');
+  const freq = document.getElementById('incomeFreq');
+
+  if (name) name.value = '';
+  if (amount) amount.value = '';
+  if (date) date.value = '';
+  if (type) type.value = 'fixed';
+  if (freq) freq.value = 'monthly';
+  editingIncomeId = null;
+}
+
+function saveIncome() {
+  const name = document.getElementById('incomeName')?.value.trim();
+  const amount = parseFloat(document.getElementById('incomeAmount')?.value) || 0;
+  const date = document.getElementById('incomeDate')?.value;
+  const type = document.getElementById('incomeType')?.value;
+  const freq = document.getElementById('incomeFreq')?.value;
+
+  if (!name || !amount || !date) {
+    showToast('すべての項目を入力してください', 'error');
+    return;
+  }
+
+  const incomeItem = {
+    id: editingIncomeId || Date.now(),
+    name,
+    amount,
+    date,
+    type,
+    frequency: freq,
+    createdAt: new Date().toISOString()
+  };
+
+  if (editingIncomeId) {
+    const index = appData.incomes.findIndex(i => i.id === editingIncomeId);
+    if (index !== -1) appData.incomes[index] = incomeItem;
+  } else {
+    appData.incomes.push(incomeItem);
+  }
+
+  saveData();
+  updateAllDisplays();
+  closeIncomeModal();
+  showToast(editingIncomeId ? '収入を更新しました' : '収入を追加しました', 'success');
+}
+
+function editIncome(id) {
+  const income = appData.incomes.find(i => i.id === id);
+  if (!income) return;
+
+  const name = document.getElementById('incomeName');
+  const amount = document.getElementById('incomeAmount');
+  const date = document.getElementById('incomeDate');
+  const type = document.getElementById('incomeType');
+  const freq = document.getElementById('incomeFreq');
+
+  if (name) name.value = income.name;
+  if (amount) amount.value = income.amount;
+  if (date) date.value = income.date;
+  if (type) type.value = income.type;
+  if (freq) freq.value = income.frequency;
+
+  editingIncomeId = id;
+  showIncomeModal();
+}
+
+/* 支出モーダル */
+function showExpenseModal() {
+  const m = document.getElementById('expenseModal');
+  if (m) m.classList.add('show');
+}
+
+function closeExpenseModal() {
+  const m = document.getElementById('expenseModal');
+  if (m) m.classList.remove('show');
+  clearExpenseForm();
+}
+
+function clearExpenseForm() {
+  const name = document.getElementById('expenseName');
+  const amount = document.getElementById('expenseAmount');
+  const date = document.getElementById('expenseDate');
+  const category = document.getElementById('expenseCategory');
+  const method = document.getElementById('expenseMethod');
+
+  if (name) name.value = '';
+  if (amount) amount.value = '';
+  if (date) date.value = '';
+  if (category) category.value = 'housing';
+  if (method) method.value = 'credit';
+  editingExpenseId = null;
+}
+
+function saveExpense() {
+  const name = document.getElementById('expenseName')?.value.trim();
+  const amount = parseFloat(document.getElementById('expenseAmount')?.value) || 0;
+  const date = document.getElementById('expenseDate')?.value;
+  const category = document.getElementById('expenseCategory')?.value;
+  const method = document.getElementById('expenseMethod')?.value;
+
+  if (!name || !amount || !date) {
+    showToast('すべての項目を入力してください', 'error');
+    return;
+  }
+
+  const expenseItem = {
+    id: editingExpenseId || Date.now(),
+    name,
+    amount,
+    date,
+    category,
+    method,
+    createdAt: new Date().toISOString()
+  };
+
+  if (editingExpenseId) {
+    const index = appData.expenses.findIndex(e => e.id === editingExpenseId);
+    if (index !== -1) appData.expenses[index] = expenseItem;
+  } else {
+    appData.expenses.push(expenseItem);
+  }
+
+  saveData();
+  updateAllDisplays();
+  closeExpenseModal();
+  showToast(editingExpenseId ? '固定費を更新しました' : '固定費を追加しました', 'success');
+}
+
+function editExpense(id) {
+  const expense = appData.expenses.find(e => e.id === id);
+  if (!expense) return;
+
+  const name = document.getElementById('expenseName');
+  const amount = document.getElementById('expenseAmount');
+  const date = document.getElementById('expenseDate');
+  const category = document.getElementById('expenseCategory');
+  const method = document.getElementById('expenseMethod');
+
+  if (name) name.value = expense.name;
+  if (amount) amount.value = expense.amount;
+  if (date) date.value = expense.date;
+  if (category) category.value = expense.category;
+  if (method) method.value = expense.method;
+
+  editingExpenseId = id;
+  showExpenseModal();
+}
+
+/* リスト表示 */
+function updateIncomeList() {
+  const container = document.getElementById('incomeList');
+  if (!container) return;
+
+  if (appData.incomes.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">💼</div>
+        <div class="empty-text">収入源を追加してください</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = appData.incomes.map(income => `
+    <div class="income-item">
+      <div class="item-info">
+        <div class="item-name">${income.name}</div>
+        <div class="item-details">${income.date} • ${getFrequencyText(income.frequency)} • ${income.type === 'fixed' ? '固定' : '変動'}</div>
+      </div>
+      <div class="item-amount">¥${income.amount.toLocaleString()}</div>
+      <div class="item-actions">
+        <button class="edit-btn" onclick="editIncome(${income.id})">✏️</button>
+        <button class="delete-btn" onclick="deleteItem('income', ${income.id})">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateExpenseList() {
+  const container = document.getElementById('expenseList');
+  if (!container) return;
+
+  if (appData.expenses.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">固定費を追加してください</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = appData.expenses.map(expense => `
+    <div class="expense-item">
+      <div class="item-info">
+        <div class="item-name">${expense.name}</div>
+        <div class="item-details">${expense.date} • ${getCategoryText(expense.category)} • ${getMethodText(expense.method)}</div>
+      </div>
+      <div class="item-amount">¥${expense.amount.toLocaleString()}</div>
+      <div class="item-actions">
+        <button class="edit-btn" onclick="editExpense(${expense.id})">✏️</button>
+        <button class="delete-btn" onclick="deleteItem('expense', ${expense.id})">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* 予算計算とサマリー */
+function updateBudgetCalculation() {
+  const monthlyIncome = appData.incomes.reduce((sum, income) => {
+    if (income.frequency === 'monthly') return sum + income.amount;
+    if (income.frequency === 'weekly') return sum + (income.amount * 4);
+    if (income.frequency === 'biweekly') return sum + (income.amount * 2);
+    if (income.frequency === 'once') return sum + 0; // 月次の継続収入としては加算しない
+    return sum;
+  }, 0);
+
+  const monthlyExpense = appData.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+  const availableForRepayment = monthlyIncome - monthlyExpense;
+
+  appData.budgetData = {
+    monthlyIncome,
+    monthlyExpense,
+    availableForRepayment
+  };
+
+  const budgetElement = document.getElementById('monthlyBudget');
+  const statusElement = document.getElementById('budgetStatus');
+
+  if (budgetElement) budgetElement.textContent = '¥' + availableForRepayment.toLocaleString();
+
+  if (statusElement) {
+    if (availableForRepayment > 0) {
+      statusElement.textContent = `収入 ¥${monthlyIncome.toLocaleString()} - 固定費 ¥${monthlyExpense.toLocaleString()}`;
+      statusElement.style.color = 'rgba(255,255,255,0.9)';
+    } else {
+      statusElement.textContent = '収支がマイナスです';
+      statusElement.style.color = '#fef3c7';
+    }
+  }
+}
+
+/* スマート提案 */
+function generateSmartSuggestion() {
+  const acomBalance = appData.acom.balance;
+  const smbcBalance = appData.smbc.balance;
+  const totalBalance = acomBalance + smbcBalance;
+  const availableBudget = appData.budgetData.availableForRepayment;
+
+  const container = document.getElementById('smartSuggestion');
+  const text = document.getElementById('suggestionText');
+  if (!container || !text) return;
+
+  if (totalBalance === 0) {
+    container.classList.remove('show');
+    return;
+  }
+
+  let suggestion = '';
+  let actionAmount = 0;
+
+  if (availableBudget > 0) {
+    const suggestedRepayment = Math.min(availableBudget * 0.8, totalBalance);
+    if (acomBalance > smbcBalance && acomBalance > 0) {
+      actionAmount = Math.min(suggestedRepayment, acomBalance);
+      suggestion = `予算から¥${actionAmount.toLocaleString()}をアコム返済に充てることをお勧めします。高金利なので優先的に返済しましょう。`;
+      currentSuggestion = { lender: 'acom', amount: actionAmount };
+    } else if (smbcBalance > 0) {
+      actionAmount = Math.min(suggestedRepayment, smbcBalance);
+      suggestion = `予算から¥${actionAmount.toLocaleString()}を三井住友返済に充てましょう。`;
+      currentSuggestion = { lender: 'smbc', amount: actionAmount };
+    }
+  } else if (availableBudget < 0) {
+    suggestion = `月の収支が¥${Math.abs(availableBudget).toLocaleString()}のマイナスです。固定費の見直しや収入増加を検討しましょう。`;
+    currentSuggestion = null;
+  } else {
+    if (acomBalance > smbcBalance && acomBalance > 0) {
+      const monthlyInterest = (acomBalance * 18.0 / 100) / 12;
+      actionAmount = Math.ceil(monthlyInterest * 2);
+      suggestion = `高金利のアコムを優先的に返済しましょう。最低¥${actionAmount.toLocaleString()}の返済をお勧めします。`;
+      currentSuggestion = { lender: 'acom', amount: actionAmount };
+    } else if (smbcBalance > 0) {
+      const monthlyInterest = (smbcBalance * 14.5 / 100) / 12;
+      actionAmount = Math.ceil(monthlyInterest * 2);
+      suggestion = `三井住友の返済を進めましょう。最低¥${actionAmount.toLocaleString()}の返済をお勧めします。`;
+      currentSuggestion = { lender: 'smbc', amount: actionAmount };
+    }
+  }
+
+  if (suggestion) {
+    text.textContent = suggestion;
+    container.classList.add('show');
+  } else {
+    container.classList.remove('show');
+  }
+}
+
+function applySuggestion() {
+  if (currentSuggestion) {
+    const input = document.getElementById(currentSuggestion.lender + 'Repayment');
+    if (input) {
+      input.value = currentSuggestion.amount;
+      updatePaymentPreview(currentSuggestion.lender);
+      showToast('提案を設定しました', 'success');
+    }
+  }
+}
+
+/* カレンダー */
+function calculateDayBalance(dateStr) {
+  const dayIncome = appData.incomes
+    .filter(income => income.date === dateStr)
+    .reduce((sum, income) => sum + income.amount, 0);
+  const dayExpense = appData.expenses
+    .filter(expense => expense.date === dateStr)
+    .reduce((sum, expense) => sum + expense.amount, 0);
+  return dayIncome - dayExpense;
+}
+
+function getDayEvents(dateStr) {
+  const events = [];
+  appData.incomes.forEach(income => {
+    if (income.date === dateStr) {
+      events.push({ name: income.name, type: 'income', amount: income.amount });
+    }
+  });
+  appData.expenses.forEach(expense => {
+    if (expense.date === dateStr) {
+      events.push({ name: expense.name, type: 'expense', amount: expense.amount });
+    }
+  });
+  return events;
+}
+
+function updateCalendar() {
+  const monthElement = document.getElementById('currentMonth');
+  const gridElement = document.getElementById('calendarGrid');
+  if (!monthElement || !gridElement) return;
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  monthElement.textContent = `${year}年${month + 1}月`;
+
+  const firstDay = new Date(year, month, 1);
+  const startDate = new Date(firstDay);
+  startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+  let calendarHTML = '';
+
+  const dayHeaders = ['日', '月', '火', '水', '木', '金', '土'];
+  dayHeaders.forEach(day => {
+    calendarHTML += `<div class="calendar-day-header">${day}</div>`;
+  });
+
+  const currentDateCopy = new Date(startDate);
+  for (let i = 0; i < 42; i++) {
+    const dateStr = currentDateCopy.toISOString().split('T')[0];
+    const isCurrentMonth = currentDateCopy.getMonth() === month;
+    const isToday = currentDateCopy.toDateString() === new Date().toDateString();
+
+    let dayClass = 'calendar-day';
+    if (!isCurrentMonth) dayClass += ' other-month';
+    if (isToday) dayClass += ' today';
+
+    const dayBalance = calculateDayBalance(dateStr);
+    const dayEvents = getDayEvents(dateStr);
+
+    calendarHTML += `
+      <div class="${dayClass}" data-date="${dateStr}">
+        <div class="day-number">${currentDateCopy.getDate()}</div>
+        <div class="day-balance ${dayBalance < 0 ? 'negative' : ''}" ${isCurrentMonth ? '' : 'style="opacity:0.5"'}>
+          ${isCurrentMonth ? '¥' + Math.abs(dayBalance).toLocaleString() : ''}
+        </div>
+        <div class="day-events">
+          ${dayEvents.slice(0, 2).map(event =>
+            `<div class="day-event ${event.type}">${event.name}</div>`
+          ).join('')}
+        </div>
+      </div>
+    `;
+
+    currentDateCopy.setDate(currentDateCopy.getDate() + 1);
+  }
+
+  gridElement.innerHTML = calendarHTML;
+}
+
+function changeMonth(direction) {
+  currentDate.setMonth(currentDate.getMonth() + direction);
+  updateCalendar();
+  updateBudgetCalculation();
+}
+
+/* グラフ */
+function updateChartDataAfterEdit() {
+  if (appData.chartData.length > 0) {
+    const lastData = appData.chartData[appData.chartData.length - 1];
+    lastData.acom = appData.acom.balance;
+    lastData.smbc = appData.smbc.balance;
+    lastData.total = appData.acom.balance + appData.smbc.balance;
+  }
+}
+
+function updateChart() {
+  const canvas = document.getElementById('debtChart');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (appData.chartData.length === 0) {
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('データがありません', canvas.width / 2, canvas.height / 2);
+    return;
+  }
+
+  const padding = 40;
+  const chartWidth = canvas.width - 2 * padding;
+  const chartHeight = canvas.height - 2 * padding;
+
+  const maxValue = Math.max(...appData.chartData.map(d => d.total));
+  if (maxValue === 0) return;
+
+  // グリッド
+  ctx.strokeStyle = '#e5e7eb';
+  ctx.lineWidth = 1;
+  ctx.fillStyle = '#6b7280';
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = 'right';
+
+  for (let i = 0; i <= 5; i++) {
+    const y = padding + (chartHeight * i / 5);
+    ctx.beginPath();
+    ctx.moveTo(padding, y);
+    ctx.lineTo(padding + chartWidth, y);
+    ctx.stroke();
+
+    const value = Math.round(maxValue * (5 - i) / 5);
+    ctx.fillText('¥' + (value / 10000).toFixed(0) + '万', padding - 5, y + 3);
+  }
+
+  function drawLine(dataKey, color) {
+    const data = appData.chartData.map(d => d[dataKey]);
+    if (data.length < 2) return;
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    for (let i = 0; i < data.length; i++) {
+      const x = padding + (chartWidth * i / Math.max(1, data.length - 1));
+      const y = padding + chartHeight - (chartHeight * data[i] / maxValue);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // 点
+    ctx.fillStyle = color;
+    for (let i = 0; i < data.length; i++) {
+      const x = padding + (chartWidth * i / Math.max(1, data.length - 1));
+      const y = padding + chartHeight - (chartHeight * data[i] / maxValue);
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  }
+
+  drawLine('total', '#2563eb');
+  drawLine('acom', '#dc2626');
+  drawLine('smbc', '#16a34a');
+
+  // 凡例
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = 'left';
+
+  ctx.fillStyle = '#2563eb';
+  ctx.fillRect(padding, 10, 10, 10);
+  ctx.fillStyle = '#374151';
+  ctx.fillText('総額', padding + 15, 18);
+
+  ctx.fillStyle = '#dc2626';
+  ctx.fillRect(padding + 60, 10, 10, 10);
+  ctx.fillText('アコム', padding + 75, 18);
+
+  ctx.fillStyle = '#16a34a';
+  ctx.fillRect(padding + 120, 10, 10, 10);
+  ctx.fillText('三井住友', padding + 135, 18);
+}
+
+/* タブ切替 */
+function switchTab(tabName) {
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+  const tabNames = ['repayment', 'income', 'expense', 'calendar', 'chart', 'history'];
+  const tabIndex = tabNames.indexOf(tabName);
+  if (tabIndex !== -1) {
+    const buttons = document.querySelectorAll('.nav-btn');
+    if (buttons[tabIndex]) buttons[tabIndex].classList.add('active');
+  }
+
+  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+  const targetTab = document.getElementById(tabName + '-tab');
+  if (targetTab) {
+    targetTab.classList.add('active');
+    currentTab = tabName;
+
+    if (tabName === 'chart') {
+      setTimeout(updateChart, 100);
+    } else if (tabName === 'calendar') {
+      setTimeout(() => {
+        updateCalendar();
+        updateBudgetCalculation();
+      }, 100);
+    }
+  }
+}
+
+/* 初期設定の表示制御 */
+function updateSetupVisibility() {
+  const setupSection = document.getElementById('setupSection');
+  if (!setupSection) return;
+  const hasData = appData.acom.initialBalance > 0 || appData.smbc.initialBalance > 0;
+  setupSection.style.display = hasData ? 'none' : 'block';
+}
+
+/* キーボードショートカット */
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter' && e.target.classList.contains('input-field')) {
+    const lender = e.target.id.includes('acom') ? 'acom' : 'smbc';
+    makeRepayment(lender);
+  }
+  if (e.key === 'Escape') {
+    closeDeleteModal();
+    closeIncomeModal();
+    closeExpenseModal();
+    if (editingHistoryId) cancelEditHistory(editingHistoryId);
+  }
+});
+
+/* PWA Service Worker 登録 */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('SW registered'))
+      .catch(() => console.log('SW registration failed'));
+  });
+}
+
+/* DOMContentLoaded 初期化 */
+document.addEventListener('DOMContentLoaded', () => {
+  loadData();
+  switchTab(currentTab);
+});
