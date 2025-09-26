@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>返済計画管理アプリ</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#2563eb">
     <style>
         * {
             margin: 0;
@@ -14,30 +14,27 @@
         }
         
         :root {
-            --primary: #3b82f6;
-            --primary-dark: #1e40af;
-            --success: #059669;
-            --success-light: #10b981;
+            --primary: #2563eb;
+            --success: #16a34a;
             --danger: #dc2626;
-            --warning: #d97706;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-400: #94a3b8;
-            --gray-500: #64748b;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --gray-800: #1e293b;
-            --gray-900: #0f172a;
+            --warning: #ca8a04;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             background: var(--gray-50);
             color: var(--gray-900);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
         }
         
         .container {
@@ -45,53 +42,49 @@
             margin: 0 auto;
             background: white;
             min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
         
         .header {
-            background: var(--gray-800);
+            background: var(--primary);
             color: white;
-            padding: 24px 20px 32px;
+            padding: 24px 20px;
             text-align: center;
-            border-radius: 0 0 24px 24px;
-            margin-bottom: 20px;
         }
         
         .header h1 {
             font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
         
         .total-debt {
-            font-size: 2.5rem;
-            font-weight: 900;
-            margin: 16px 0 8px;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 8px 0 4px;
         }
         
         .debt-subtitle {
             font-size: 0.875rem;
-            opacity: 0.8;
+            opacity: 0.9;
         }
         
         .main-content {
-            padding: 0 20px 120px;
+            padding: 20px;
+            padding-bottom: 120px;
         }
         
         .setup-section {
-            background: #fffbeb;
-            border: 2px solid #fef3c7;
-            border-radius: 16px;
+            background: var(--warning);
+            color: white;
             padding: 20px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             text-align: center;
         }
         
         .setup-section h3 {
-            color: var(--warning);
-            font-size: 1.125rem;
-            font-weight: 700;
-            margin-bottom: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
         }
         
         .setup-inputs {
@@ -102,116 +95,75 @@
         }
         
         .setup-input {
-            padding: 14px;
-            border: 2px solid #fef3c7;
-            border-radius: 12px;
+            padding: 12px;
+            border: none;
             font-size: 0.875rem;
-            background: white;
-        }
-        
-        .setup-input:focus {
-            outline: none;
-            border-color: var(--warning);
+            background: rgba(255,255,255,0.9);
         }
         
         .setup-btn {
-            background: var(--warning);
-            color: white;
+            background: white;
+            color: var(--warning);
             border: none;
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-weight: 700;
+            padding: 12px 24px;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 0.875rem;
-        }
-        
-        .setup-btn:hover {
-            opacity: 0.9;
         }
         
         .quick-stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 32px;
+            gap: 1px;
+            margin-bottom: 20px;
+            background: var(--gray-200);
         }
         
         .stat-card {
-            background: #eff6ff;
-            border: 1px solid #dbeafe;
-            border-radius: 16px;
+            background: white;
             padding: 16px 8px;
             text-align: center;
         }
         
         .stat-value {
-            font-size: 1rem;
-            font-weight: 800;
-            color: #2563eb;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--primary);
             margin-bottom: 4px;
         }
         
         .stat-label {
-            font-size: 0.6875rem;
+            font-size: 0.65rem;
             color: var(--gray-600);
-            font-weight: 600;
+            font-weight: 500;
         }
         
         .loan-card {
             background: white;
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border-top: 4px solid;
-        }
-        
-        .loan-card.acom {
-            border-top-color: var(--danger);
-        }
-        
-        .loan-card.smbc {
-            border-top-color: var(--success);
+            border: 1px solid var(--gray-200);
+            margin-bottom: 20px;
+            padding: 20px;
         }
         
         .loan-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--gray-200);
         }
         
         .loan-title {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-        
-        .loan-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-        
-        .acom .loan-icon {
-            background: #fef2f2;
-            color: var(--danger);
-        }
-        
-        .smbc .loan-icon {
-            background: #ecfdf5;
-            color: var(--success);
+            gap: 8px;
+            font-size: 1.125rem;
+            font-weight: 600;
         }
         
         .loan-balance {
-            font-size: 1.5rem;
-            font-weight: 900;
+            font-size: 1.25rem;
+            font-weight: 700;
         }
         
         .acom .loan-balance { 
@@ -225,57 +177,52 @@
         .loan-details {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 24px;
+            gap: 1px;
+            margin-bottom: 16px;
+            background: var(--gray-200);
         }
         
         .detail-item {
-            background: var(--gray-50);
-            border: 1px solid var(--gray-200);
-            border-radius: 12px;
+            background: white;
             padding: 12px 8px;
             text-align: center;
         }
         
         .detail-value {
             font-size: 0.875rem;
-            font-weight: 700;
+            font-weight: 600;
             color: var(--gray-800);
             margin-bottom: 2px;
         }
         
         .detail-label {
-            font-size: 0.6875rem;
-            color: var(--gray-500);
-            font-weight: 600;
+            font-size: 0.65rem;
+            color: var(--gray-600);
         }
         
         .input-section {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         
         .input-field {
             width: 100%;
-            padding: 18px 20px;
-            font-size: 1.125rem;
-            font-weight: 600;
-            border: 2px solid var(--gray-200);
-            border-radius: 16px;
-            background: var(--gray-50);
+            padding: 16px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 2px solid var(--gray-300);
+            background: white;
         }
         
         .input-field:focus {
             outline: none;
             border-color: var(--primary);
-            background: white;
         }
         
         .payment-preview {
-            background: #eff6ff;
-            border: 2px solid #dbeafe;
-            border-radius: 16px;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
             padding: 16px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             display: none;
         }
         
@@ -285,8 +232,8 @@
         
         .preview-title {
             font-size: 0.875rem;
-            font-weight: 700;
-            color: #2563eb;
+            font-weight: 600;
+            color: var(--gray-700);
             margin-bottom: 12px;
             text-align: center;
         }
@@ -294,30 +241,28 @@
         .preview-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             margin-bottom: 8px;
+            font-size: 0.875rem;
         }
         
         .preview-row:last-child {
             margin-bottom: 0;
-            padding-top: 12px;
-            border-top: 2px solid #dbeafe;
-        }
-        
-        .preview-label {
-            font-size: 0.875rem;
-            color: var(--gray-600);
+            padding-top: 8px;
+            border-top: 1px solid var(--gray-200);
             font-weight: 600;
         }
         
+        .preview-label {
+            color: var(--gray-600);
+        }
+        
         .preview-value {
-            font-weight: 700;
+            font-weight: 500;
             color: var(--gray-800);
         }
         
         .preview-value.highlight {
             color: var(--primary);
-            font-size: 1.125rem;
         }
         
         .repay-btn {
@@ -325,97 +270,90 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 18px;
-            border-radius: 16px;
-            font-size: 1rem;
-            font-weight: 700;
+            padding: 16px;
+            font-size: 0.875rem;
+            font-weight: 600;
             cursor: pointer;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         
         .repay-btn:hover {
-            background: var(--primary-dark);
+            background: #1d4ed8;
         }
         
         .repay-btn:disabled {
-            background: var(--gray-300);
-            cursor: not-allowed;
+            background: var(--gray-400);
         }
         
         .quick-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-        
-        .quick-btn {
-            background: var(--gray-100);
-            border: 1px solid var(--gray-200);
-            border-radius: 8px;
-            padding: 12px 8px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .quick-btn:hover {
+            gap: 1px;
             background: var(--gray-200);
         }
         
+        .quick-btn {
+            background: white;
+            border: none;
+            padding: 12px 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--gray-700);
+        }
+        
+        .quick-btn:hover {
+            background: var(--gray-50);
+        }
+        
         .progress-section {
-            background: #ecfdf5;
-            border: 2px solid #d1fae5;
-            border-radius: 16px;
+            background: var(--success);
+            color: white;
             padding: 20px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
+            text-align: center;
         }
         
         .progress-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         
         .progress-title {
             font-size: 1rem;
-            font-weight: 700;
-            color: var(--success);
+            font-weight: 600;
         }
         
         .progress-percentage {
-            font-size: 1.25rem;
-            font-weight: 900;
-            color: var(--success);
+            font-size: 1rem;
+            font-weight: 700;
         }
         
         .progress-bar {
-            height: 12px;
-            background: #d1fae5;
-            border-radius: 6px;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
             overflow: hidden;
         }
         
         .progress-fill {
             height: 100%;
-            background: var(--success);
-            border-radius: 6px;
+            background: white;
             width: 0%;
         }
         
         .chart-container {
             background: white;
-            border: 2px solid var(--gray-200);
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+            margin-bottom: 20px;
         }
         
         .chart-title {
-            font-size: 1.125rem;
-            font-weight: 700;
-            margin-bottom: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
             text-align: center;
             color: var(--gray-800);
         }
@@ -429,25 +367,24 @@
             width: 100%;
             background: white;
             border-top: 1px solid var(--gray-200);
-            padding: 8px 12px 12px;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 4px;
+            gap: 1px;
+            background: var(--gray-200);
         }
         
         .nav-btn {
-            padding: 12px 8px;
-            background: transparent;
+            background: white;
             border: none;
-            border-radius: 12px;
+            padding: 12px 8px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
-            color: var(--gray-500);
+            color: var(--gray-600);
         }
         
         .nav-btn.active {
@@ -456,7 +393,7 @@
         }
         
         .nav-icon {
-            font-size: 1.25rem;
+            font-size: 1.125rem;
         }
         
         .tab-content {
@@ -469,10 +406,10 @@
         
         .history-item {
             background: white;
-            border: 2px solid var(--gray-100);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 12px;
+            border: 1px solid var(--gray-200);
+            margin-bottom: 8px;
+            padding: 16px;
+            position: relative;
         }
         
         .history-header {
@@ -483,15 +420,14 @@
         }
         
         .history-amount {
-            font-size: 1.25rem;
-            font-weight: 900;
+            font-size: 1.125rem;
+            font-weight: 700;
             color: var(--success);
         }
         
         .history-date {
             font-size: 0.75rem;
             color: var(--gray-500);
-            font-weight: 600;
         }
         
         .history-details {
@@ -500,38 +436,100 @@
             gap: 8px;
             font-size: 0.875rem;
             color: var(--gray-600);
-            font-weight: 600;
+        }
+        
+        .history-actions {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .edit-btn, .delete-btn {
+            background: none;
+            border: none;
+            font-size: 0.875rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            color: var(--gray-500);
+        }
+        
+        .edit-btn:hover {
+            color: var(--primary);
+        }
+        
+        .delete-btn:hover {
+            color: var(--danger);
+        }
+        
+        .edit-form {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-300);
+            padding: 16px;
+            margin-top: 12px;
+            display: none;
+        }
+        
+        .edit-form.show {
+            display: block;
+        }
+        
+        .edit-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--gray-300);
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+        }
+        
+        .edit-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .save-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        
+        .cancel-btn {
+            background: var(--gray-400);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            cursor: pointer;
         }
         
         .calculator-card {
             background: var(--primary);
             color: white;
-            border-radius: 20px;
-            padding: 24px;
+            padding: 20px;
             margin-bottom: 20px;
         }
         
         .calculator-title {
-            font-size: 1.25rem;
-            font-weight: 700;
+            font-size: 1rem;
+            font-weight: 600;
             margin-bottom: 16px;
             text-align: center;
         }
         
         .calculator-input {
-            background: white;
-            border: none;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
             width: 100%;
+            padding: 12px;
+            border: none;
+            font-size: 0.875rem;
             margin-bottom: 16px;
         }
         
         .calculator-result {
             background: rgba(255,255,255,0.1);
-            border-radius: 12px;
             padding: 16px;
             display: none;
         }
@@ -544,15 +542,14 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 8px;
-            font-weight: 600;
+            font-size: 0.875rem;
         }
         
         .smart-suggestion {
-            background: #fffbeb;
-            border: 2px solid #fef3c7;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 24px;
+            background: var(--warning);
+            color: white;
+            padding: 16px;
+            margin-bottom: 20px;
             text-align: center;
             display: none;
         }
@@ -562,31 +559,24 @@
         }
         
         .suggestion-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--warning);
-            margin-bottom: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
         
         .suggestion-text {
-            color: var(--gray-700);
-            font-weight: 500;
-            margin-bottom: 16px;
+            font-size: 0.875rem;
+            margin-bottom: 12px;
         }
         
         .suggestion-btn {
-            background: var(--warning);
-            color: white;
+            background: white;
+            color: var(--warning);
             border: none;
-            padding: 12px 20px;
-            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
-            font-size: 0.875rem;
-        }
-        
-        .suggestion-btn:hover {
-            opacity: 0.9;
         }
         
         .toast {
@@ -596,10 +586,9 @@
             transform: translateX(-50%);
             background: var(--gray-800);
             color: white;
-            padding: 16px 24px;
-            border-radius: 12px;
+            padding: 12px 20px;
             font-size: 0.875rem;
-            font-weight: 600;
+            font-weight: 500;
             z-index: 1000;
             max-width: 350px;
             text-align: center;
@@ -620,37 +609,82 @@
         
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px 20px;
             color: var(--gray-500);
         }
         
         .empty-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            opacity: 0.6;
+            font-size: 3rem;
+            margin-bottom: 16px;
         }
         
         .empty-text {
+            font-size: 0.875rem;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 24px;
+            max-width: 350px;
+            width: 90%;
+        }
+        
+        .modal-title {
             font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            font-size: 0.875rem;
             font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .modal-btn.confirm {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .modal-btn.cancel {
+            background: var(--gray-300);
+            color: var(--gray-700);
         }
         
         @media (max-width: 480px) {
             .container {
                 max-width: 100%;
-                box-shadow: none;
             }
             
             .bottom-nav {
                 max-width: 100%;
-            }
-            
-            .main-content {
-                padding: 0 16px 120px;
-            }
-            
-            .header {
-                padding: 20px 16px 28px;
             }
         }
     </style>
@@ -658,7 +692,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>💰 返済管理</h1>
+            <h1>返済管理</h1>
             <div class="total-debt" id="totalDebt">¥0</div>
             <div class="debt-subtitle">総残高</div>
         </div>
@@ -668,7 +702,7 @@
             <div class="tab-content active" id="repayment-tab">
                 <!-- 初期設定 -->
                 <div class="setup-section" id="setupSection">
-                    <h3>🚀 初期残高を設定しましょう</h3>
+                    <h3>初期残高を設定してください</h3>
                     <div class="setup-inputs">
                         <input type="number" class="setup-input" id="acomInitial" placeholder="アコム残高">
                         <input type="number" class="setup-input" id="smbcInitial" placeholder="三井住友残高">
@@ -678,9 +712,9 @@
                 
                 <!-- スマート提案 -->
                 <div class="smart-suggestion" id="smartSuggestion">
-                    <div class="suggestion-title">💡 スマート提案</div>
+                    <div class="suggestion-title">スマート提案</div>
                     <div class="suggestion-text" id="suggestionText"></div>
-                    <button class="suggestion-btn" onclick="applySuggestion()" id="suggestionBtn">提案を適用</button>
+                    <button class="suggestion-btn" onclick="applySuggestion()">提案を適用</button>
                 </div>
                 
                 <!-- クイック統計 -->
@@ -707,7 +741,7 @@
                 <div class="loan-card acom">
                     <div class="loan-header">
                         <div class="loan-title">
-                            <div class="loan-icon">🏛️</div>
+                            <span>🏛️</span>
                             <span>アコム</span>
                         </div>
                         <div class="loan-balance" id="acomBalance">¥0</div>
@@ -734,7 +768,7 @@
                     </div>
                     
                     <div class="payment-preview" id="acomPreview">
-                        <div class="preview-title">💰 返済内訳プレビュー</div>
+                        <div class="preview-title">返済内訳プレビュー</div>
                         <div class="preview-row">
                             <span class="preview-label">利息充当</span>
                             <span class="preview-value" id="acomPreviewInterest">¥0</span>
@@ -749,7 +783,7 @@
                         </div>
                     </div>
                     
-                    <button class="repay-btn" onclick="makeRepayment('acom')">💳 返済実行</button>
+                    <button class="repay-btn" onclick="makeRepayment('acom')">返済実行</button>
                     
                     <div class="quick-actions">
                         <button class="quick-btn" onclick="quickPayment('acom', 'interest')">利息分のみ</button>
@@ -761,7 +795,7 @@
                 <div class="loan-card smbc">
                     <div class="loan-header">
                         <div class="loan-title">
-                            <div class="loan-icon">🏦</div>
+                            <span>🏦</span>
                             <span>三井住友</span>
                         </div>
                         <div class="loan-balance" id="smbcBalance">¥0</div>
@@ -788,7 +822,7 @@
                     </div>
                     
                     <div class="payment-preview" id="smbcPreview">
-                        <div class="preview-title">💰 返済内訳プレビュー</div>
+                        <div class="preview-title">返済内訳プレビュー</div>
                         <div class="preview-row">
                             <span class="preview-label">利息充当</span>
                             <span class="preview-value" id="smbcPreviewInterest">¥0</span>
@@ -803,7 +837,7 @@
                         </div>
                     </div>
                     
-                    <button class="repay-btn" onclick="makeRepayment('smbc')">💳 返済実行</button>
+                    <button class="repay-btn" onclick="makeRepayment('smbc')">返済実行</button>
                     
                     <div class="quick-actions">
                         <button class="quick-btn" onclick="quickPayment('smbc', 'interest')">利息分のみ</button>
@@ -814,7 +848,7 @@
                 <!-- 進捗セクション -->
                 <div class="progress-section">
                     <div class="progress-header">
-                        <div class="progress-title">🎯 完済進捗</div>
+                        <div class="progress-title">完済進捗</div>
                         <div class="progress-percentage" id="progressPercentage">0%</div>
                     </div>
                     <div class="progress-bar">
@@ -826,7 +860,7 @@
             <!-- タブコンテンツ: 計算機 -->
             <div class="tab-content" id="calculator-tab">
                 <div class="calculator-card">
-                    <div class="calculator-title">💰 完済日計算</div>
+                    <div class="calculator-title">完済日計算</div>
                     <input type="number" class="calculator-input" id="monthlyPayment" 
                            placeholder="月々の返済予定額" oninput="calculatePayoffDate()">
                     <div class="calculator-result" id="payoffResult">
@@ -849,7 +883,7 @@
             <!-- タブコンテンツ: グラフ -->
             <div class="tab-content" id="chart-tab">
                 <div class="chart-container">
-                    <div class="chart-title">📈 残高推移グラフ</div>
+                    <div class="chart-title">残高推移グラフ</div>
                     <canvas id="debtChart" width="360" height="280"></canvas>
                 </div>
             </div>
@@ -885,6 +919,18 @@
         </div>
     </div>
     
+    <!-- 削除確認モーダル -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-title">履歴を削除しますか？</div>
+            <div>この操作は取り消せません。残高も元に戻ります。</div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeDeleteModal()">キャンセル</button>
+                <button class="modal-btn confirm" onclick="confirmDelete()">削除</button>
+            </div>
+        </div>
+    </div>
+    
     <div id="toast" class="toast"></div>
     
     <script>
@@ -911,16 +957,43 @@
         
         let currentTab = 'repayment';
         let currentSuggestion = null;
+        let editingHistoryId = null;
+        let deleteHistoryId = null;
         
-        // データ読み込み
+        // データ読み込み（互換性修正）
         function loadData() {
             const savedData = localStorage.getItem('loanRepaymentData');
             if (savedData) {
-                const parsed = JSON.parse(savedData);
-                appData = {...appData, ...parsed};
-                // 金利を正しい値に修正
-                appData.acom.rate = 18.0;
-                appData.smbc.rate = 14.5;
+                try {
+                    const parsed = JSON.parse(savedData);
+                    appData = {...appData, ...parsed};
+                    
+                    // 金利を正しい値に修正
+                    appData.acom.rate = 18.0;
+                    appData.smbc.rate = 14.5;
+                    
+                    // 既存の履歴データにlenderCodeが無い場合は追加
+                    if (appData.history && Array.isArray(appData.history)) {
+                        appData.history.forEach(item => {
+                            if (!item.lenderCode && item.lender) {
+                                item.lenderCode = item.lender === 'アコム' ? 'acom' : 'smbc';
+                            }
+                        });
+                    }
+                    
+                    // 統計データが無い場合は初期化
+                    if (!appData.stats) {
+                        appData.stats = {
+                            totalPaid: 0,
+                            interestPaid: 0,
+                            paymentCount: 0
+                        };
+                    }
+                    
+                } catch (error) {
+                    console.error('データ読み込みエラー:', error);
+                    showToast('データの読み込みに失敗しました', 'error');
+                }
             }
             updateAllDisplays();
         }
@@ -945,7 +1018,6 @@
             appData.smbc.balance = smbcInitial;
             appData.smbc.initialBalance = smbcInitial;
             
-            // 初期データ
             appData.chartData = [{
                 date: new Date().toLocaleDateString(),
                 acom: acomInitial,
@@ -955,7 +1027,7 @@
             
             saveData();
             updateAllDisplays();
-            showToast('設定完了！返済を始めましょう', 'success');
+            showToast('設定完了！', 'success');
             
             document.getElementById('setupSection').style.display = 'none';
             document.getElementById('acomInitial').value = '';
@@ -985,11 +1057,10 @@
             
             previewElement.classList.add('show');
             
-            // 入力validation
             if (amount > balance) {
                 inputElement.style.borderColor = 'var(--danger)';
             } else {
-                inputElement.style.borderColor = 'var(--success)';
+                inputElement.style.borderColor = 'var(--primary)';
             }
         }
         
@@ -1037,20 +1108,18 @@
             const monthlyInterest = (balance * rate / 100) / 12;
             const principal = Math.max(0, amount - monthlyInterest);
             
-            // 残高更新
             appData[lender].balance = Math.max(0, balance - amount);
             
-            // 統計更新
             appData.stats.totalPaid += amount;
             appData.stats.interestPaid += Math.min(monthlyInterest, amount);
             appData.stats.paymentCount++;
             
-            // 履歴追加
             const historyItem = {
                 id: Date.now(),
                 date: new Date().toLocaleDateString(),
                 time: new Date().toLocaleTimeString(),
                 lender: lender === 'acom' ? 'アコム' : '三井住友',
+                lenderCode: lender,
                 amount: amount,
                 interest: Math.min(monthlyInterest, amount),
                 principal: principal,
@@ -1058,7 +1127,6 @@
             };
             appData.history.unshift(historyItem);
             
-            // グラフデータ更新
             appData.chartData.push({
                 date: new Date().toLocaleDateString(),
                 acom: appData.acom.balance,
@@ -1073,25 +1141,21 @@
             saveData();
             updateAllDisplays();
             
-            // UI reset
             document.getElementById(lender + 'Preview').classList.remove('show');
             document.getElementById(lender + 'Repayment').value = '';
-            document.getElementById(lender + 'Repayment').style.borderColor = 'var(--gray-200)';
+            document.getElementById(lender + 'Repayment').style.borderColor = 'var(--gray-300)';
             
-            // 完済チェック
             if (appData[lender].balance === 0) {
                 showToast(`${lender === 'acom' ? 'アコム' : '三井住友'}完済おめでとう！`, 'success');
-                
                 setTimeout(() => {
                     if (appData.acom.balance === 0 && appData.smbc.balance === 0) {
-                        showToast('全借金完済！素晴らしいです！', 'success');
+                        showToast('全借金完済！素晴らしい！', 'success');
                     }
                 }, 1500);
             } else {
-                showToast(`${amount.toLocaleString()}円返済完了！`, 'success');
+                showToast(`${amount.toLocaleString()}円返済完了`, 'success');
             }
             
-            // 新しい提案を生成
             generateSmartSuggestion();
         }
         
@@ -1176,12 +1240,12 @@
             if (acomBalance > smbcBalance && acomBalance > 0) {
                 const monthlyInterest = (acomBalance * 18.0 / 100) / 12;
                 actionAmount = Math.ceil(monthlyInterest * 3);
-                suggestion = `高金利のアコム(18%)を優先返済しましょう。月利息の3倍(¥${actionAmount.toLocaleString()})を返済すると効果的です。`;
+                suggestion = `高金利のアコム(18%)を優先返済。¥${actionAmount.toLocaleString()}の返済が効果的です。`;
                 currentSuggestion = { lender: 'acom', amount: actionAmount };
             } else if (smbcBalance > 0) {
                 const monthlyInterest = (smbcBalance * 14.5 / 100) / 12;
                 actionAmount = Math.ceil(monthlyInterest * 3);
-                suggestion = `三井住友カードに¥${actionAmount.toLocaleString()}を返済して着実に残高を減らしましょう。`;
+                suggestion = `三井住友に¥${actionAmount.toLocaleString()}を返済しましょう。`;
                 currentSuggestion = { lender: 'smbc', amount: actionAmount };
             }
             
@@ -1198,7 +1262,7 @@
             if (currentSuggestion) {
                 document.getElementById(currentSuggestion.lender + 'Repayment').value = currentSuggestion.amount;
                 updatePaymentPreview(currentSuggestion.lender);
-                showToast('提案を入力欄に設定しました！', 'success');
+                showToast('提案を設定しました', 'success');
             }
         }
         
@@ -1225,7 +1289,6 @@
                 return;
             }
             
-            // 簡易計算
             let remainingBalance = totalBalance;
             let totalInterestPaid = 0;
             let months = 0;
@@ -1260,8 +1323,8 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             if (appData.chartData.length === 0) {
-                ctx.fillStyle = '#94a3b8';
-                ctx.font = '16px Inter';
+                ctx.fillStyle = '#9ca3af';
+                ctx.font = '14px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.fillText('データがありません', canvas.width / 2, canvas.height / 2);
                 return;
@@ -1274,14 +1337,13 @@
             const maxValue = Math.max(...appData.chartData.map(d => d.total));
             if (maxValue === 0) return;
             
-            // グリッド描画
-            ctx.strokeStyle = '#e2e8f0';
+            // グリッド
+            ctx.strokeStyle = '#e5e7eb';
             ctx.lineWidth = 1;
-            ctx.fillStyle = '#64748b';
-            ctx.font = '12px Inter';
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '10px sans-serif';
             ctx.textAlign = 'right';
             
-            // 水平グリッド
             for (let i = 0; i <= 5; i++) {
                 const y = padding + (chartHeight * i / 5);
                 ctx.beginPath();
@@ -1290,16 +1352,16 @@
                 ctx.stroke();
                 
                 const value = Math.round(maxValue * (5 - i) / 5);
-                ctx.fillText('¥' + (value / 10000).toFixed(0) + '万', padding - 10, y + 4);
+                ctx.fillText('¥' + (value / 10000).toFixed(0) + '万', padding - 5, y + 3);
             }
             
-            // データライン描画
-            function drawLine(dataKey, color, width = 3) {
+            // データライン
+            function drawLine(dataKey, color) {
                 const data = appData.chartData.map(d => d[dataKey]);
                 if (data.length < 2) return;
                 
                 ctx.strokeStyle = color;
-                ctx.lineWidth = width;
+                ctx.lineWidth = 2;
                 ctx.beginPath();
                 
                 for (let i = 0; i < data.length; i++) {
@@ -1314,38 +1376,38 @@
                 }
                 ctx.stroke();
                 
-                // ポイント描画
+                // ポイント
                 ctx.fillStyle = color;
                 for (let i = 0; i < data.length; i++) {
                     const x = padding + (chartWidth * i / Math.max(1, data.length - 1));
                     const y = padding + chartHeight - (chartHeight * data[i] / maxValue);
                     
                     ctx.beginPath();
-                    ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                    ctx.arc(x, y, 3, 0, 2 * Math.PI);
                     ctx.fill();
                 }
             }
             
-            drawLine('total', '#3b82f6');
+            drawLine('total', '#2563eb');
             drawLine('acom', '#dc2626');
-            drawLine('smbc', '#059669');
+            drawLine('smbc', '#16a34a');
             
             // 凡例
-            ctx.font = '12px Inter';
+            ctx.font = '10px sans-serif';
             ctx.textAlign = 'left';
             
-            ctx.fillStyle = '#3b82f6';
-            ctx.fillRect(padding, 15, 12, 12);
-            ctx.fillStyle = '#1f2937';
-            ctx.fillText('総額', padding + 20, 25);
+            ctx.fillStyle = '#2563eb';
+            ctx.fillRect(padding, 10, 10, 10);
+            ctx.fillStyle = '#374151';
+            ctx.fillText('総額', padding + 15, 18);
             
             ctx.fillStyle = '#dc2626';
-            ctx.fillRect(padding + 70, 15, 12, 12);
-            ctx.fillText('アコム', padding + 90, 25);
+            ctx.fillRect(padding + 60, 10, 10, 10);
+            ctx.fillText('アコム', padding + 75, 18);
             
-            ctx.fillStyle = '#059669';
-            ctx.fillRect(padding + 150, 15, 12, 12);
-            ctx.fillText('三井住友', padding + 170, 25);
+            ctx.fillStyle = '#16a34a';
+            ctx.fillRect(padding + 120, 10, 10, 10);
+            ctx.fillText('三井住友', padding + 135, 18);
         }
         
         // 履歴更新
@@ -1364,6 +1426,10 @@
             
             historyContainer.innerHTML = appData.history.slice(0, 20).map(item => `
                 <div class="history-item">
+                    <div class="history-actions">
+                        <button class="edit-btn" onclick="startEditHistory(${item.id})">✏️</button>
+                        <button class="delete-btn" onclick="showDeleteModal(${item.id})">🗑️</button>
+                    </div>
                     <div class="history-header">
                         <div>
                             <strong>${item.lender}</strong>
@@ -1376,8 +1442,160 @@
                         <span>元本: ¥${Math.round(item.principal).toLocaleString()}</span>
                         <span>残高: ¥${item.remainingBalance.toLocaleString()}</span>
                     </div>
+                    <div class="edit-form" id="editForm${item.id}">
+                        <input type="number" class="edit-input" id="editAmount${item.id}" value="${item.amount}" placeholder="返済金額">
+                        <div class="edit-actions">
+                            <button class="save-btn" onclick="saveEditHistory(${item.id})">保存</button>
+                            <button class="cancel-btn" onclick="cancelEditHistory(${item.id})">キャンセル</button>
+                        </div>
+                    </div>
                 </div>
             `).join('');
+        }
+        
+        // 履歴編集開始
+        function startEditHistory(historyId) {
+            document.getElementById(`editForm${historyId}`).classList.add('show');
+            editingHistoryId = historyId;
+        }
+        
+        // 履歴編集キャンセル
+        function cancelEditHistory(historyId) {
+            document.getElementById(`editForm${historyId}`).classList.remove('show');
+            editingHistoryId = null;
+        }
+        
+        // 履歴編集保存
+        function saveEditHistory(historyId) {
+            const newAmount = parseFloat(document.getElementById(`editAmount${historyId}`).value);
+            
+            if (!newAmount || newAmount <= 0) {
+                showToast('正しい金額を入力してください', 'error');
+                return;
+            }
+            
+            const historyIndex = appData.history.findIndex(h => h.id === historyId);
+            if (historyIndex === -1) {
+                showToast('履歴が見つかりません', 'error');
+                return;
+            }
+            
+            const historyItem = appData.history[historyIndex];
+            const oldAmount = historyItem.amount;
+            
+            // lenderCodeがない場合は lender から推定
+            let lenderCode = historyItem.lenderCode;
+            if (!lenderCode) {
+                lenderCode = historyItem.lender === 'アコム' ? 'acom' : 'smbc';
+                // 履歴にlenderCodeを追加
+                historyItem.lenderCode = lenderCode;
+            }
+            
+            // 対象の残高データが存在するかチェック
+            if (!appData[lenderCode]) {
+                showToast('データエラーが発生しました', 'error');
+                return;
+            }
+            
+            // 残高を元に戻す
+            appData[lenderCode].balance += oldAmount;
+            appData.stats.totalPaid -= oldAmount;
+            appData.stats.interestPaid -= historyItem.interest;
+            
+            // 新しい金額で再計算
+            const balance = appData[lenderCode].balance;
+            const rate = appData[lenderCode].rate;
+            const monthlyInterest = (balance * rate / 100) / 12;
+            const principal = Math.max(0, newAmount - monthlyInterest);
+            
+            // 新しい値で更新
+            appData[lenderCode].balance = Math.max(0, balance - newAmount);
+            appData.stats.totalPaid += newAmount;
+            appData.stats.interestPaid += Math.min(monthlyInterest, newAmount);
+            
+            // 履歴アイテム更新
+            historyItem.amount = newAmount;
+            historyItem.interest = Math.min(monthlyInterest, newAmount);
+            historyItem.principal = principal;
+            historyItem.remainingBalance = appData[lenderCode].balance;
+            
+            // グラフデータも更新
+            updateChartDataAfterEdit();
+            
+            saveData();
+            updateAllDisplays();
+            showToast('履歴を更新しました', 'success');
+            
+            document.getElementById(`editForm${historyId}`).classList.remove('show');
+            editingHistoryId = null;
+        }
+        
+        // 削除モーダル表示
+        function showDeleteModal(historyId) {
+            deleteHistoryId = historyId;
+            document.getElementById('deleteModal').classList.add('show');
+        }
+        
+        // 削除モーダル閉じる
+        function closeDeleteModal() {
+            deleteHistoryId = null;
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+        
+        // 履歴削除実行
+        function confirmDelete() {
+            if (!deleteHistoryId) return;
+            
+            const historyIndex = appData.history.findIndex(h => h.id === deleteHistoryId);
+            if (historyIndex === -1) {
+                showToast('履歴が見つかりません', 'error');
+                closeDeleteModal();
+                return;
+            }
+            
+            const historyItem = appData.history[historyIndex];
+            
+            // lenderCodeがない場合は lender から推定
+            let lenderCode = historyItem.lenderCode;
+            if (!lenderCode) {
+                lenderCode = historyItem.lender === 'アコム' ? 'acom' : 'smbc';
+            }
+            
+            // 対象の残高データが存在するかチェック
+            if (!appData[lenderCode]) {
+                showToast('データエラーが発生しました', 'error');
+                closeDeleteModal();
+                return;
+            }
+            
+            // 残高を元に戻す
+            appData[lenderCode].balance += historyItem.amount;
+            appData.stats.totalPaid -= historyItem.amount;
+            appData.stats.interestPaid -= historyItem.interest;
+            appData.stats.paymentCount--;
+            
+            // 履歴から削除
+            appData.history.splice(historyIndex, 1);
+            
+            // グラフデータ更新
+            updateChartDataAfterEdit();
+            
+            saveData();
+            updateAllDisplays();
+            showToast('履歴を削除しました', 'success');
+            
+            closeDeleteModal();
+        }
+        
+        // グラフデータ再計算
+        function updateChartDataAfterEdit() {
+            // 簡易的な実装：最新の残高でグラフデータを更新
+            if (appData.chartData.length > 0) {
+                const lastData = appData.chartData[appData.chartData.length - 1];
+                lastData.acom = appData.acom.balance;
+                lastData.smbc = appData.smbc.balance;
+                lastData.total = appData.acom.balance + appData.smbc.balance;
+            }
         }
         
         // 初期設定の表示/非表示
@@ -1389,17 +1607,14 @@
         
         // タブ切り替え
         function switchTab(tabName) {
-            // ナビボタン更新
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             
-            // タブコンテンツ更新
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(tabName + '-tab').classList.add('active');
             
             currentTab = tabName;
             
-            // グラフタブの場合は再描画
             if (tabName === 'chart') {
                 setTimeout(updateChart, 100);
             }
@@ -1422,26 +1637,27 @@
                 const lender = e.target.id.includes('acom') ? 'acom' : 'smbc';
                 makeRepayment(lender);
             }
+            
+            if (e.key === 'Escape') {
+                closeDeleteModal();
+                if (editingHistoryId) {
+                    cancelEditHistory(editingHistoryId);
+                }
+            }
         });
         
-        // PWA Service Worker登録
+        // PWA Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(function(registration) {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch(function(registrationError) {
-                        console.log('SW registration failed: ', registrationError);
-                    });
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
             });
         }
         
         // アプリ初期化
         document.addEventListener('DOMContentLoaded', function() {
             loadData();
-            
-            // 定期的に利息を更新（1分毎）
             setInterval(updateInterestDisplay, 60000);
         });
     </script>
