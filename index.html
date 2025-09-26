@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>返済計画管理アプリ</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2196F3">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .total-debt {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .loan-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .acom {
+            border-left-color: #e74c3c;
+        }
+        
+        .smbc {
+            border-left-color: #27ae60;
+        }
+        
+        .loan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .loan-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .loan-balance {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .loan-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-item {
+            text-align: center;
+        }
+        
+        .detail-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .repayment-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .input-group input:focus {
+            border-color: #2196F3;
+            outline: none;
+        }
+        
+        .repay-btn {
+            background: linear-gradient(135deg, #2196F3, #21CBF3);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        .repay-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .chart-container {
+            margin-top: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+        }
+        
+        .chart-container h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .chart {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        .history-section {
+            margin-top: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+        }
+        
+        .history-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            transition: width 0.5s ease;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        @media (max-width: 768px) {
+            .repayment-section {
+                flex-direction: column;
+            }
+            
+            .repay-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 返済計画管理アプリ</h1>
+            <div class="total-debt" id="totalDebt">¥0</div>
+            <div>総残高</div>
+        </div>
+        
+        <div class="content">
+            <!-- アコム -->
+            <div class="loan-card acom">
+                <div class="loan-header">
+                    <div class="loan-name">🏛️ アコム</div>
+                    <div class="loan-balance" id="acomBalance">¥0</div>
+                </div>
+                
+                <div class="loan-details">
+                    <div class="detail-item">
+                        <div class="detail-label">年利</div>
+                        <div class="detail-value" id="acomRate">18.0%</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">月利息</div>
+                        <div class="detail-value" id="acomInterest">¥0</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">元本</div>
+                        <div class="detail-value" id="acomPrincipal">¥0</div>
+                    </div>
+                </div>
+                
+                <div class="repayment-section">
+                    <div class="input-group">
+                        <label for="acomRepayment">返済金額</label>
+                        <input type="number" id="acomRepayment" placeholder="返済額を入力">
+                    </div>
+                    <button class="repay-btn" onclick="makeRepayment('acom')">返済実行</button>
+                </div>
+            </div>
+            
+            <!-- 三井住友 -->
+            <div class="loan-card smbc">
+                <div class="loan-header">
+                    <div class="loan-name">🏦 三井住友</div>
+                    <div class="loan-balance" id="smbcBalance">¥0</div>
+                </div>
+                
+                <div class="loan-details">
+                    <div class="detail-item">
+                        <div class="detail-label">年利</div>
+                        <div class="detail-value" id="smbcRate">14.5%</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">月利息</div>
+                        <div class="detail-value" id="smbcInterest">¥0</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">元本</div>
+                        <div class="detail-value" id="smbcPrincipal">¥0</div>
+                    </div>
+                </div>
+                
+                <div class="repayment-section">
+                    <div class="input-group">
+                        <label for="smbcRepayment">返済金額</label>
+                        <input type="number" id="smbcRepayment" placeholder="返済額を入力">
+                    </div>
+                    <button class="repay-btn" onclick="makeRepayment('smbc')">返済実行</button>
+                </div>
+            </div>
+            
+            <!-- 初期設定 -->
+            <div class="loan-card" style="border-left-color: #f39c12;">
+                <h3>⚙️ 初期設定</h3>
+                <div class="repayment-section">
+                    <div class="input-group">
+                        <label for="acomInitial">アコム初期残高</label>
+                        <input type="number" id="acomInitial" placeholder="初期残高を入力">
+                    </div>
+                    <div class="input-group">
+                        <label for="smbcInitial">三井住友初期残高</label>
+                        <input type="number" id="smbcInitial" placeholder="初期残高を入力">
+                    </div>
+                    <button class="repay-btn" onclick="setInitialBalances()">設定</button>
+                </div>
+            </div>
+            
+            <!-- 進捗バー -->
+            <div class="chart-container">
+                <h3>📊 返済進捗</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+                <div style="text-align: center; margin-top: 10px;">
+                    <span id="progressText">0% 完済</span>
+                </div>
+            </div>
+            
+            <!-- グラフ -->
+            <div class="chart-container">
+                <h3>📈 残高推移グラフ</h3>
+                <canvas id="debtChart" width="400" height="300"></canvas>
+            </div>
+            
+            <!-- 返済履歴 -->
+            <div class="history-section">
+                <h3>📝 返済履歴</h3>
+                <div id="repaymentHistory"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="toast" class="toast"></div>
+    
+    <script>
+        // アプリのデータ
+        let appData = {
+            acom: {
+                balance: 0,
+                initialBalance: 0,
+                rate: 18.0
+            },
+            smbc: {
+                balance: 0,
+                initialBalance: 0,
+                rate: 14.5
+            },
+            history: [],
+            chartData: []
+        };
+        
+        // ローカルストレージからデータを読み込み
+        function loadData() {
+            const savedData = localStorage.getItem('loanRepaymentData');
+            if (savedData) {
+                appData = {...appData, ...JSON.parse(savedData)};
+            }
+            updateDisplay();
+            updateChart();
+        }
+        
+        // データをローカルストレージに保存
+        function saveData() {
+            localStorage.setItem('loanRepaymentData', JSON.stringify(appData));
+        }
+        
+        // 初期残高を設定
+        function setInitialBalances() {
+            const acomInitial = parseFloat(document.getElementById('acomInitial').value) || 0;
+            const smbcInitial = parseFloat(document.getElementById('smbcInitial').value) || 0;
+            
+            if (acomInitial === 0 && smbcInitial === 0) {
+                showToast('残高を入力してください', 'error');
+                return;
+            }
+            
+            appData.acom.balance = acomInitial;
+            appData.acom.initialBalance = acomInitial;
+            appData.smbc.balance = smbcInitial;
+            appData.smbc.initialBalance = smbcInitial;
+            
+            // グラフ用初期データ
+            appData.chartData = [{
+                date: new Date().toLocaleDateString(),
+                acom: acomInitial,
+                smbc: smbcInitial,
+                total: acomInitial + smbcInitial
+            }];
+            
+            saveData();
+            updateDisplay();
+            updateChart();
+            showToast('初期残高を設定しました！');
+            
+            // 入力フィールドをクリア
+            document.getElementById('acomInitial').value = '';
+            document.getElementById('smbcInitial').value = '';
+        }
+        
+        // 返済を実行
+        function makeRepayment(lender) {
+            const inputId = lender + 'Repayment';
+            const amount = parseFloat(document.getElementById(inputId).value);
+            
+            if (!amount || amount <= 0) {
+                showToast('正しい金額を入力してください', 'error');
+                return;
+            }
+            
+            if (amount > appData[lender].balance) {
+                showToast('返済額が残高を超えています', 'error');
+                return;
+            }
+            
+            // 月利息を計算
+            const monthlyInterest = (appData[lender].balance * appData[lender].rate / 100) / 12;
+            const principalPayment = Math.max(0, amount - monthlyInterest);
+            
+            // 残高を更新
+            appData[lender].balance -= amount;
+            
+            // 履歴に追加
+            const historyItem = {
+                date: new Date().toLocaleDateString(),
+                lender: lender === 'acom' ? 'アコム' : '三井住友',
+                amount: amount,
+                interest: monthlyInterest,
+                principal: principalPayment,
+                remainingBalance: appData[lender].balance
+            };
+            appData.history.unshift(historyItem);
+            
+            // グラフデータに追加
+            appData.chartData.push({
+                date: new Date().toLocaleDateString(),
+                acom: appData.acom.balance,
+                smbc: appData.smbc.balance,
+                total: appData.acom.balance + appData.smbc.balance
+            });
+            
+            // 最大20件まで保持
+            if (appData.chartData.length > 20) {
+                appData.chartData = appData.chartData.slice(-20);
+            }
+            
+            saveData();
+            updateDisplay();
+            updateChart();
+            updateHistory();
+            
+            showToast(`${lender === 'acom' ? 'アコム' : '三井住友'}に ${amount.toLocaleString()}円 返済完了！`);
+            
+            // 入力フィールドをクリア
+            document.getElementById(inputId).value = '';
+        }
+        
+        // 表示を更新
+        function updateDisplay() {
+            // 残高表示
+            document.getElementById('acomBalance').textContent = '¥' + appData.acom.balance.toLocaleString();
+            document.getElementById('smbcBalance').textContent = '¥' + appData.smbc.balance.toLocaleString();
+            
+            const totalDebt = appData.acom.balance + appData.smbc.balance;
+            document.getElementById('totalDebt').textContent = '¥' + totalDebt.toLocaleString();
+            
+            // 利息計算
+            const acomInterest = (appData.acom.balance * appData.acom.rate / 100) / 12;
+            const smbcInterest = (appData.smbc.balance * appData.smbc.rate / 100) / 12;
+            
+            document.getElementById('acomInterest').textContent = '¥' + Math.round(acomInterest).toLocaleString();
+            document.getElementById('smbcInterest').textContent = '¥' + Math.round(smbcInterest).toLocaleString();
+            
+            document.getElementById('acomPrincipal').textContent = '¥' + appData.acom.balance.toLocaleString();
+            document.getElementById('smbcPrincipal').textContent = '¥' + appData.smbc.balance.toLocaleString();
+            
+            // 進捗バー更新
+            updateProgressBar();
+        }
+        
+        // 進捗バーを更新
+        function updateProgressBar() {
+            const initialTotal = appData.acom.initialBalance + appData.smbc.initialBalance;
+            const currentTotal = appData.acom.balance + appData.smbc.balance;
+            
+            if (initialTotal === 0) {
+                document.getElementById('progressBar').style.width = '0%';
+                document.getElementById('progressText').textContent = '0% 完済';
+                return;
+            }
+            
+            const progress = ((initialTotal - currentTotal) / initialTotal) * 100;
+            document.getElementById('progressBar').style.width = Math.max(0, progress) + '%';
+            document.getElementById('progressText').textContent = Math.round(progress) + '% 完済';
+        }
+        
+        // グラフを更新
+        function updateChart() {
+            const canvas = document.getElementById('debtChart');
+            const ctx = canvas.getContext('2d');
+            
+            // キャンバスをクリア
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (appData.chartData.length === 0) return;
+            
+            const padding = 40;
+            const chartWidth = canvas.width - 2 * padding;
+            const chartHeight = canvas.height - 2 * padding;
+            
+            // データの最大値を取得
+            const maxValue = Math.max(...appData.chartData.map(d => d.total));
+            if (maxValue === 0) return;
+            
+            // グリッドラインを描画
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            
+            // 水平グリッドライン
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight * i / 5);
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(padding + chartWidth, y);
+                ctx.stroke();
+                
+                // Y軸ラベル
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'right';
+                const value = Math.round(maxValue * (5 - i) / 5);
+                ctx.fillText('¥' + value.toLocaleString(), padding - 10, y + 4);
+            }
+            
+            // 垂直グリッドライン
+            const dataPoints = appData.chartData.length;
+            for (let i = 0; i < dataPoints; i++) {
+                const x = padding + (chartWidth * i / Math.max(1, dataPoints - 1));
+                ctx.beginPath();
+                ctx.moveTo(x, padding);
+                ctx.lineTo(x, padding + chartHeight);
+                ctx.stroke();
+            }
+            
+            // 線グラフを描画
+            function drawLine(data, color, label) {
+                if (data.length < 2) return;
+                
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                for (let i = 0; i < data.length; i++) {
+                    const x = padding + (chartWidth * i / Math.max(1, data.length - 1));
+                    const y = padding + chartHeight - (chartHeight * data[i] / maxValue);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                
+                // ポイントを描画
+                ctx.fillStyle = color;
+                for (let i = 0; i < data.length; i++) {
+                    const x = padding + (chartWidth * i / Math.max(1, data.length - 1));
+                    const y = padding + chartHeight - (chartHeight * data[i] / maxValue);
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            }
+            
+            // データ線を描画
+            drawLine(appData.chartData.map(d => d.total), '#2196F3', '総額');
+            drawLine(appData.chartData.map(d => d.acom), '#e74c3c', 'アコム');
+            drawLine(appData.chartData.map(d => d.smbc), '#27ae60', '三井住友');
+            
+            // 凡例を描画
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'left';
+            
+            ctx.fillStyle = '#2196F3';
+            ctx.fillRect(padding, 10, 15, 15);
+            ctx.fillStyle = '#333';
+            ctx.fillText('総額', padding + 25, 22);
+            
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillRect(padding + 80, 10, 15, 15);
+            ctx.fillStyle = '#333';
+            ctx.fillText('アコム', padding + 105, 22);
+            
+            ctx.fillStyle = '#27ae60';
+            ctx.fillRect(padding + 160, 10, 15, 15);
+            ctx.fillStyle = '#333';
+            ctx.fillText('三井住友', padding + 185, 22);
+        }
+        
+        // 履歴を更新
+        function updateHistory() {
+            const historyContainer = document.getElementById('repaymentHistory');
+            
+            if (appData.history.length === 0) {
+                historyContainer.innerHTML = '<p style="text-align: center; color: #666;">まだ返済履歴がありません</p>';
+                return;
+            }
+            
+            historyContainer.innerHTML = appData.history.slice(0, 10).map(item => `
+                <div class="history-item">
+                    <div>
+                        <strong>${item.lender}</strong> - ${item.date}<br>
+                        <small>利息: ¥${Math.round(item.interest).toLocaleString()} | 元本: ¥${Math.round(item.principal).toLocaleString()}</small>
+                    </div>
+                    <div style="text-align: right;">
+                        <strong>¥${item.amount.toLocaleString()}</strong><br>
+                        <small>残高: ¥${item.remainingBalance.toLocaleString()}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // トースト表示
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = type === 'error' ? '#e74c3c' : '#27ae60';
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // アプリ初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateHistory();
+            
+            // Enterキーで返済実行
+            document.getElementById('acomRepayment').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') makeRepayment('acom');
+            });
+            
+            document.getElementById('smbcRepayment').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') makeRepayment('smbc');
+            });
+        });
+    </script>
+</body>
+</html>
